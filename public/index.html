@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Desktopy OS</title>
+
+    <!-- Google Fonts: Tajawal for Arabic, Inter for English, Fira Code for Terminal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        ar: ['Tajawal', 'sans-serif'],
+                        en: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        os: {
+                            900: '#0f1115',
+                            800: '#1a1d24',
+                            700: '#272b36',
+                            accent: '#6366f1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --font-primary: 'Tajawal', sans-serif;
+        }
+
+        html[lang="en"] {
+            --font-primary: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            overflow: hidden;
+            user-select: none;
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f1115 60%, #000000 100%);
+            transition: background 0.5s ease;
+        }
+
+        body.light {
+            background: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f1f5f9 60%, #ffffff 100%);
+        }
+
+        /* Premium Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 17, 21, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Window Mechanics */
+        .os-window {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
+            transform-origin: center;
+        }
+
+        .light .os-window {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .os-window.minimized {
+            transform: scale(0.8) translateY(100px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .window-header {
+            cursor: grab;
+        }
+
+        .window-header:active {
+            cursor: grabbing;
+        }
+
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            /* Universally placed bottom-right for drag logic consistency */
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+            z-index: 10;
+        }
+
+        html[dir="rtl"] .resize-handle {
+            left: 0;
+            right: auto;
+            cursor: sw-resize;
+        }
+
+        /* Launcher */
+        #launcher-overlay {
+            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0px);
+        }
+
+        #launcher-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(24px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.5);
+        }
+    </style>
+</head>
+
+<body class="w-screen h-screen relative text-gray-200">
+
+    <!-- Top Status Bar -->
+    <div
+        class="h-8 w-full glass-panel fixed top-0 start-0 end-0 z-[100] flex items-center justify-between px-4 text-xs font-medium">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleLauncher()"
+                class="hover:text-indigo-400 transition flex items-center gap-1 cursor-pointer">
+                <i class="ph ph-squares-four text-lg"></i>
+                <span data-i18n="activities">الأنشطة</span>
+            </button>
+            <div id="active-app-title" class="hidden md:block font-bold text-indigo-300">Desktopy OS</div>
+        </div>
+
+        <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 cursor-pointer hover:text-white transition"
+            dir="ltr">
+            <span id="top-date"></span>
+            <span id="top-time" class="font-bold"></span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button onclick="toggleLang()" id="btn-lang"
+                class="bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded transition cursor-pointer font-bold">EN</button>
+            <button onclick="toggleTheme()" class="hover:text-yellow-400 transition cursor-pointer">
+                <i id="theme-icon" class="ph ph-moon text-lg"></i>
+            </button>
+            <div class="flex items-center gap-2" dir="ltr">
+                <i class="ph ph-wifi-high text-sm"></i>
+                <i class="ph ph-speaker-high text-sm"></i>
+                <i class="ph ph-battery-full text-sm text-green-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop Area -->
+    <div id="desktop-area"
+        class="absolute top-8 bottom-16 start-0 end-0 p-4 z-10 flex flex-col flex-wrap content-start gap-4"></div>
+
+    <!-- Window Management Layer -->
+    <div id="window-layer" class="absolute top-8 bottom-16 start-0 end-0 z-20 pointer-events-none"></div>
+
+    <!-- App Launcher -->
+    <div id="launcher-overlay" class="fixed inset-0 z-[90] bg-os-900/80 flex flex-col pt-16 pb-24 px-8 items-center">
+        <div class="w-full max-w-xl relative mb-8">
+            <i class="ph ph-magnifying-glass absolute top-3 start-4 text-gray-400 text-lg"></i>
+            <input type="text" id="launcher-search" data-i18n-placeholder="search_apps"
+                placeholder="اكتب للبحث عن التطبيقات..."
+                class="w-full bg-white/10 border border-white/20 rounded-xl py-3 ps-12 pe-4 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:bg-white/20 transition backdrop-blur-md">
+        </div>
+        <div id="launcher-grid"
+            class="flex-1 w-full max-w-5xl overflow-y-auto grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-8 content-start pb-10">
+        </div>
+    </div>
+
+    <!-- Floating Bottom Dock -->
+    <div
+        class="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100] h-14 glass-panel rounded-2xl px-2 flex items-center gap-2 border border-white/10 shadow-2xl">
+        <div id="dock-pinned" class="flex items-center gap-1"></div>
+        <div class="w-px h-8 bg-white/20 mx-1"></div>
+        <div id="dock-running" class="flex items-center gap-1"></div>
+    </div>
+
+    <script>
+        const i18n = {
+            ar: {
+                activities: "الأنشطة", search_apps: "اكتب للبحث عن التطبيقات...",
+                terminal: "الطرفية", files: "الملفات", editor: "محرر النصوص",
+                settings: "الإعدادات", monitor: "مراقب النظام", calc: "الحاسبة",
+                browser: "المتصفح", paint: "الرسام", tasks: "المهام", notes: "الملاحظات",
+                tictactoe: "إكس أو", snake: "الثعبان", weather: "الطقس", clock: "الساعة",
+                calendar: "التقويم", music: "الموسيقى", video: "الفيديو", camera: "الكاميرا",
+                store: "المتجر", mail: "البريد", contacts: "جهات الاتصال", maps: "الخرائط",
+                dict: "القاموس", translate: "الترجمة", sysinfo: "معلومات النظام",
+                logs: "السجلات", fonts: "الخطوط", clipboard: "الحافظة",
+                pdf: "قارئ PDF", markdown: "ماركداون", code: "البرمجة",
+                db: "قواعد البيانات", api: "اختبار API", regex: "محلل Regex",
+                hash: "التشفير", base64: "محول Base64", json: "منسق JSON",
+                qr: "مولد QR", password: "كلمات المرور", color: "منتقي الألوان",
+                unit: "الوحدات", currency: "العملات", stop: "ساعة الإيقاف",
+                pomodoro: "بومودورو", fitness: "اللياقة", recipes: "الطبخ",
+                expenses: "المصروفات", stock: "الأسهم", news: "الأخبار",
+                books: "الكتب", podcasts: "البودكاست", piano: "البيانو"
+            },
+            en: {
+                activities: "Activities", search_apps: "Type to search apps...",
+                terminal: "Terminal", files: "Files", editor: "Text Editor",
+                settings: "Settings", monitor: "Sys Monitor", calc: "Calculator",
+                browser: "Browser", paint: "Paint", tasks: "Tasks", notes: "Notes",
+                tictactoe: "Tic Tac Toe", snake: "Snake", weather: "Weather", clock: "Clock",
+                calendar: "Calendar", music: "Music", video: "Video", camera: "Camera",
+                store: "Store", mail: "Mail", contacts: "Contacts", maps: "Maps",
+                dict: "Dictionary", translate: "Translate", sysinfo: "System Info",
+                logs: "Logs", fonts: "Fonts", clipboard: "Clipboard",
+                pdf: "PDF Viewer", markdown: "Markdown", code: "Code Studio",
+                db: "Databases", api: "API Tester", regex: "Regex Tester",
+                hash: "Hash Gen", base64: "Base64", json: "JSON Format",
+                qr: "QR Generator", password: "Passwords", color: "Color Picker",
+                unit: "Units", currency: "Currency", stop: "Stopwatch",
+                pomodoro: "Pomodoro", fitness: "Fitness", recipes: "Recipes",
+                expenses: "Expenses", stock: "Stocks", news: "News",
+                books: "Books", podcasts: "Podcasts", piano: "Piano"
+            }
+        };
+
+        const state = {
+            lang: 'ar', theme: 'dark', launcherOpen: false,
+            windows: {}, zIndexCounter: 100
+        };
+
+        const apps = {
+            terminal: { icon: 'terminal-window', color: 'text-green-400', pinned: true, run: (id, el) => buildTerminal(id, el) },
+            calc: { icon: 'calculator', color: 'text-orange-400', pinned: true, run: (id, el) => buildCalculator(id, el) },
+            paint: { icon: 'palette', color: 'text-pink-400', pinned: true, run: (id, el) => buildPaint(id, el) },
+            editor: { icon: 'notepad', color: 'text-blue-400', pinned: true, run: (id, el) => buildEditor(id, el) },
+            tictactoe: { icon: 'hash', color: 'text-purple-400', pinned: false, run: (id, el) => buildTicTacToe(id, el) },
+            settings: { icon: 'gear', color: 'text-gray-400', pinned: true, run: (id, el) => buildSettings(id, el) },
+            monitor: { icon: 'chart-line-up', color: 'text-red-400', pinned: false, run: (id, el) => buildMonitor(id, el) },
+            code: { icon: 'code', color: 'text-blue-400', pinned: true, run: (id, el) => buildCode(id, el) },
+            regex: { icon: 'brackets-curly', color: 'text-yellow-400', pinned: false, run: (id, el) => buildGeneric(id, el, "PCRE engine active. /^([a-z0-9_.-]+)@([da-z.-]+).([a-z.]{2,6})$/", true) },
+            base64: { icon: 'arrows-left-right', color: 'text-blue-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Encoder ready. RXhhbXBsZSBCYXNlNjQgU3RyaW5n", true) },
+            files: { icon: 'folder-open', color: 'text-blue-500', pinned: true, run: (id, el) => buildGeneric(id, el, "File System explorer UI sandbox.") },
+            browser: { icon: 'globe', color: 'text-cyan-400', pinned: true, run: (id, el) => buildGeneric(id, el, "Webkit wrapper mock initialized.") },
+            tasks: { icon: 'check-square', color: 'text-green-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Task manager loaded.") },
+            weather: { icon: 'cloud-sun', color: 'text-yellow-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Fetching Bahrain MET data...") },
+            clock: { icon: 'clock', color: 'text-gray-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Timezone synced with host.") },
+            calendar: { icon: 'calendar-blank', color: 'text-red-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Event matrix loaded.") },
+            store: { icon: 'shopping-bag', color: 'text-orange-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Fetching apt repositories.") },
+            sysinfo: { icon: 'info', color: 'text-gray-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Desktopy Web Kernel 1.0.0") },
+            piano: { icon: 'piano-keys', color: 'text-white', pinned: false, run: (id, el) => buildGeneric(id, el, "WebAudio API synths ready.") }
+        };
+
+        function openApp(id) {
+            if (state.windows[id]) {
+                focusWindow(id);
+                if (state.windows[id].minimized) toggleMinimize(id);
+                return;
+            }
+
+            closeLauncher();
+            state.zIndexCounter++;
+
+            const win = document.createElement('div');
+            win.id = `win-${id}`;
+            win.className = `os-window glass-panel text-gray-200 pointer-events-auto border border-white/10`;
+
+            // Layout Math Setup - Force strictly LTR coordinates to fix drag/resize bugs universally
+            const wWidth = 650;
+            const wHeight = 450;
+            const screenW = window.innerWidth;
+            const offset = (Object.keys(state.windows).length * 30);
+
+            let startLeft;
+            if (state.lang === 'ar') {
+                startLeft = Math.max(10, screenW - wWidth - 100 - offset);
+            } else {
+                startLeft = Math.min(screenW - wWidth - 10, 100 + offset);
+            }
+
+            win.style.width = wWidth + 'px';
+            win.style.height = wHeight + 'px';
+            win.style.top = `${80 + offset}px`;
+            win.style.left = `${startLeft}px`;
+            win.style.zIndex = state.zIndexCounter;
+
+            const title = i18n[state.lang][id] || id;
+
+            // Header: Flex justify-between adapts natively. Controls forced LTR.
+            win.innerHTML = `
+                <div class="window-header h-10 bg-os-900/80 border-b border-white/10 flex items-center px-4 justify-between select-none relative group" onmousedown="focusWindow('${id}')" ontouchstart="focusWindow('${id}')">
+                    <div class="flex items-center gap-2 pointer-events-none w-2/3">
+                        <i class="ph ph-${apps[id].icon} ${apps[id].color} text-lg"></i>
+                        <span class="text-sm font-semibold truncate app-title" data-i18n-id="${id}">${title}</span>
+                    </div>
+                    <div class="flex items-center gap-2 z-10" dir="ltr">
+                        <button onclick="closeApp('${id}')" class="w-3.5 h-3.5 rounded-full bg-red-500 hover:bg-red-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-x text-[8px] opacity-0 group-hover/btn:opacity-100 text-red-900"></i></button>
+                        <button onclick="toggleMinimize('${id}')" class="w-3.5 h-3.5 rounded-full bg-yellow-500 hover:bg-yellow-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-minus text-[8px] opacity-0 group-hover/btn:opacity-100 text-yellow-900"></i></button>
+                        <button onclick="toggleMaximize('${id}')" class="w-3.5 h-3.5 rounded-full bg-green-500 hover:bg-green-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-arrows-out text-[8px] opacity-0 group-hover/btn:opacity-100 text-green-900"></i></button>
+                    </div>
+                </div>
+                <div class="flex-1 relative overflow-hidden bg-os-900/40" id="win-body-${id}" onmousedown="focusWindow('${id}')" ontouchstart="focusWindow('${id}')">
+                </div>
+                <div class="resize-handle"></div>
+            `;
+
+            document.getElementById('window-layer').appendChild(win);
+            state.windows[id] = { element: win, maximized: false, minimized: false };
+
+            apps[id].run(id, document.getElementById(`win-body-${id}`));
+
+            setupDragging(win, win.querySelector('.window-header'));
+            setupResizing(win);
+            updateDock();
+            focusWindow(id);
+        }
+
+        function focusWindow(id) {
+            if (!state.windows[id]) return;
+            state.zIndexCounter++;
+            state.windows[id].element.style.zIndex = state.zIndexCounter;
+            document.getElementById('active-app-title').innerText = i18n[state.lang][id] || id;
+            document.getElementById('active-app-title').setAttribute('data-i18n', id);
+        }
+
+        function closeApp(id) {
+            if (state.windows[id]) {
+                state.windows[id].element.style.transform = 'scale(0.9)';
+                state.windows[id].element.style.opacity = '0';
+                setTimeout(() => {
+                    state.windows[id].element.remove();
+                    delete state.windows[id];
+                    updateDock();
+                    if (Object.keys(state.windows).length === 0) {
+                        document.getElementById('active-app-title').innerText = 'Desktopy OS';
+                        document.getElementById('active-app-title').removeAttribute('data-i18n');
+                    }
+                }, 200);
+            }
+        }
+
+        function toggleMaximize(id) {
+            const w = state.windows[id];
+            if (w.maximized) {
+                w.element.style.width = w.prevWidth;
+                w.element.style.height = w.prevHeight;
+                w.element.style.top = w.prevTop;
+                w.element.style.left = w.prevLeft;
+                w.maximized = false;
+            } else {
+                w.prevWidth = w.element.style.width;
+                w.prevHeight = w.element.style.height;
+                w.prevTop = w.element.style.top;
+                w.prevLeft = w.element.style.left;
+
+                w.element.style.width = '100%';
+                w.element.style.height = '100%';
+                w.element.style.top = '0';
+                w.element.style.left = '0';
+                w.maximized = true;
+            }
+        }
+
+        function toggleMinimize(id) {
+            const w = state.windows[id];
+            if (w.minimized) {
+                w.element.classList.remove('minimized');
+                w.minimized = false;
+                focusWindow(id);
+            } else {
+                w.element.classList.add('minimized');
+                w.minimized = true;
+            }
+            updateDock();
+        }
+
+        function setupDragging(win, header) {
+            let isDragging = false, startX, startY, startLeft, startTop;
+
+            const startDrag = (e) => {
+                if (e.target.closest('button') || state.windows[win.id.replace('win-', '')].maximized) return;
+                isDragging = true;
+                const touch = e.type.includes('touch') ? e.touches[0] : e;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                startTop = parseInt(win.style.top || win.offsetTop, 10);
+                startLeft = parseInt(win.style.left || win.offsetLeft, 10);
+                document.body.style.cursor = 'grabbing';
+            };
+
+            const drag = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const touch = e.type.includes('touch') ? e.touches[0] : e;
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                win.style.left = `${startLeft + dx}px`;
+                win.style.top = Math.max(32, startTop + dy) + 'px';
+            };
+
+            const endDrag = () => {
+                isDragging = false;
+                document.body.style.cursor = 'default';
+            };
+
+            header.addEventListener('mousedown', startDrag);
+            header.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function setupResizing(win) {
+            const handle = win.querySelector('.resize-handle');
+            let isResizing = false, startX, startY, startW, startH, isRTL;
+
+            const startResize = (e) => {
+                isResizing = true;
+                const touch = e.type.includes('touch') ? e.touches[0] : e;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                startW = win.offsetWidth;
+                startH = win.offsetHeight;
+                isRTL = state.lang === 'ar';
+                e.stopPropagation();
+            };
+
+            const resize = (e) => {
+                if (!isResizing) return;
+                const touch = e.type.includes('touch') ? e.touches[0] : e;
+
+                // If RTL, handle is on the left edge. Moving left (negative dx) increases width.
+                // If LTR, handle is on the right edge. Moving right (positive dx) increases width.
+                let dx = touch.clientX - startX;
+                if (isRTL) dx = -dx;
+
+                const dy = touch.clientY - startY;
+
+                win.style.width = Math.max(300, startW + dx) + 'px';
+                win.style.height = Math.max(200, startH + dy) + 'px';
+
+                // If RTL, dragging the left handle changes width but keeping 'left' static makes window grow right.
+                // To make it grow left visually, we must adjust 'left'.
+                if (isRTL) {
+                    win.style.left = (parseInt(win.style.left || 0) - dx) + 'px';
+                }
+            };
+
+            const endResize = () => isResizing = false;
+
+            handle.addEventListener('mousedown', startResize);
+            handle.addEventListener('touchstart', startResize, { passive: false });
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('touchmove', resize, { passive: false });
+            document.addEventListener('mouseup', endResize);
+            document.addEventListener('touchend', endResize);
+        }
+
+        // 1. Terminal (Strictly LTR)
+        function buildTerminal(id, container) {
+            container.innerHTML = `
+                <div class="h-full bg-os-900/90 font-mono text-[13px] p-3 flex flex-col overflow-hidden text-green-400 text-left" dir="ltr">
+                    <div id="term-out-${id}" class="flex-1 overflow-y-auto whitespace-pre-wrap leading-relaxed pb-2">
+Desktopy OS v1.0.0 (Web-Kernel)
+Type 'help' for available commands.
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-blue-400 font-bold">root@desktopy:~$</span>
+                        <input type="text" id="term-in-${id}" class="flex-1 bg-transparent border-none outline-none text-green-400" autocomplete="off" spellcheck="false" autofocus>
+                    </div>
+                </div>
+            `;
+
+            const inp = document.getElementById(`term-in-${id}`);
+            const out = document.getElementById(`term-out-${id}`);
+
+            inp.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = inp.value.trim();
+                    inp.value = '';
+                    let response = '';
+
+                    if (cmd) {
+                        out.innerHTML += `\n<span class="text-blue-400 font-bold">root@desktopy:~$</span> ${cmd}\n`;
+                        switch (cmd.toLowerCase()) {
+                            case 'help': response = 'Commands: help, clear, date, echo, neofetch, whoami'; break;
+                            case 'clear': out.innerHTML = ''; return;
+                            case 'date': response = new Date().toString(); break;
+                            case 'whoami': response = 'root (Web Administrator)'; break;
+                            case 'neofetch': response = `
+       .---.       OS: Desktopy OS Web
+      /     \\      Kernel: WebKit DOM Engine
+     | () () |     Shell: Bash-simulated (JS)
+      \\  _  /      Theme: Custom Dark Glass
+       \`---\`       Font: Fira Code
+                            `; break;
+                            default:
+                                if (cmd.startsWith('echo ')) response = cmd.substring(5);
+                                else response = `bash: ${cmd}: command not found`;
+                        }
+                        if (response) out.innerHTML += response;
+                    }
+                    out.scrollTop = out.scrollHeight;
+                }
+            });
+            container.addEventListener('mousedown', () => inp.focus());
+        }
+
+        // 2. Calculator (Strictly LTR logic)
+        function buildCalculator(id, container) {
+            container.innerHTML = `
+                <div class="h-full bg-os-800 flex flex-col p-4" dir="ltr">
+                    <div id="calc-display-${id}" class="h-20 bg-os-900 border border-white/5 rounded-xl mb-4 text-right px-4 flex items-center justify-end text-3xl font-mono text-white overflow-hidden shadow-inner">0</div>
+                    <div class="grid grid-cols-4 gap-2 flex-1">
+                        ${['C', '/', '*', '-', '7', '8', '9', '+', '4', '5', '6', '=', '1', '2', '3', '0', '.', 'Del'].map(btn => {
+                let classes = "bg-os-700 hover:bg-os-600 rounded-xl text-lg font-bold transition flex items-center justify-center text-white cursor-pointer active:scale-95";
+                if (btn === '=') classes += " row-span-2 bg-indigo-600 hover:bg-indigo-500";
+                if (btn === '0') classes += " col-span-2";
+                if (['/', '*', '-', '+', 'C', 'Del'].includes(btn)) classes += " text-indigo-300";
+                return `<button class="${classes}" onclick="calcPress('${id}', '${btn}')">${btn}</button>`;
+            }).join('')}
+                    </div>
+                </div>
+            `;
+            container.dataset.val = '';
+        }
+
+        function calcPress(id, key) {
+            const container = document.getElementById(`win-body-${id}`);
+            const display = document.getElementById(`calc-display-${id}`);
+            let val = container.dataset.val;
+
+            if (key === 'C') val = '';
+            else if (key === 'Del') val = val.slice(0, -1);
+            else if (key === '=') {
+                try { val = new Function('return ' + val)().toString(); }
+                catch (e) { val = 'Error'; }
+            }
+            else val += key;
+
+            container.dataset.val = val;
+            display.innerText = val || '0';
+        }
+
+        // 3. Paint Canvas
+        function buildPaint(id, container) {
+            container.innerHTML = `
+                <div class="h-full flex flex-col bg-os-800">
+                    <div class="h-12 bg-os-900/50 border-b border-white/5 flex items-center px-4 gap-3">
+                        <input type="color" id="paint-color-${id}" value="#6366f1" class="w-8 h-8 rounded cursor-pointer border-none bg-transparent">
+                        <input type="range" id="paint-size-${id}" min="1" max="20" value="3" class="w-24 cursor-pointer">
+                        <button onclick="document.getElementById('canvas-${id}').getContext('2d').clearRect(0,0,2000,2000)" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-xs ms-auto transition cursor-pointer">Clear</button>
+                    </div>
+                    <div class="flex-1 bg-white relative cursor-crosshair overflow-hidden">
+                        <canvas id="canvas-${id}" width="2000" height="2000" class="absolute top-0 start-0"></canvas>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const canvas = document.getElementById(`canvas-${id}`);
+                const ctx = canvas.getContext('2d');
+                let painting = false;
+
+                function draw(e) {
+                    if (!painting) return;
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.type.includes('touch') ? e.touches[0] : e;
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+
+                    ctx.lineWidth = document.getElementById(`paint-size-${id}`).value;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = document.getElementById(`paint-color-${id}`).value;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+
+                const start = (e) => { painting = true; draw(e); };
+                const end = () => { painting = false; ctx.beginPath(); };
+
+                canvas.addEventListener('mousedown', start);
+                canvas.addEventListener('touchstart', start, { passive: false });
+                canvas.addEventListener('mouseup', end);
+                canvas.addEventListener('touchend', end);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('touchmove', draw, { passive: false });
+                canvas.addEventListener('mouseleave', end);
+            }, 100);
+        }
+
+        // 4. Text Editor (Auto-directional Textarea)
+        function buildEditor(id, container) {
+            const saved = localStorage.getItem('desktopy_notes') || '';
+            container.innerHTML = `
+                <div class="h-full flex flex-col bg-os-900">
+                    <div class="h-10 border-b border-white/5 flex items-center px-4 gap-2 text-xs text-gray-400">
+                        <span class="hover:text-white cursor-pointer">File</span>
+                        <span class="hover:text-white cursor-pointer">Edit</span>
+                        <div class="flex-1"></div>
+                        <span id="editor-status-${id}" class="text-[10px] text-green-500 opacity-0 transition-opacity">Saved</span>
+                    </div>
+                    <textarea id="editor-text-${id}" dir="auto" class="flex-1 bg-transparent p-4 outline-none resize-none text-sm text-gray-200" placeholder="Type your text here...">${saved}</textarea>
+                </div>
+            `;
+
+            const ta = document.getElementById(`editor-text-${id}`);
+            const status = document.getElementById(`editor-status-${id}`);
+            let timeout;
+
+            ta.addEventListener('input', () => {
+                clearTimeout(timeout);
+                status.style.opacity = '1';
+                status.innerText = 'Saving...';
+                status.className = "text-[10px] text-yellow-500 transition-opacity";
+
+                timeout = setTimeout(() => {
+                    localStorage.setItem('desktopy_notes', ta.value);
+                    status.innerText = 'Saved';
+                    status.className = "text-[10px] text-green-500 transition-opacity";
+                    setTimeout(() => status.style.opacity = '0', 2000);
+                }, 1000);
+            });
+        }
+
+        // 5. Settings (Responsive UI)
+        function buildSettings(id, container) {
+            container.innerHTML = `
+                <div class="h-full bg-os-800 flex p-0">
+                    <div class="w-1/3 bg-os-900 border-e border-white/5 p-4 flex flex-col gap-2">
+                        <button class="text-start px-3 py-2 bg-white/10 rounded-lg font-medium text-sm">System</button>
+                        <button class="text-start px-3 py-2 hover:bg-white/5 rounded-lg text-sm text-gray-400 transition">Appearance</button>
+                    </div>
+                    <div class="w-2/3 p-6 flex flex-col gap-6 overflow-y-auto">
+                        <h3 class="text-2xl font-bold">System Settings</h3>
+                        
+                        <div class="bg-os-900 border border-white/5 rounded-xl p-4 flex justify-between items-center shadow-sm">
+                            <div>
+                                <div class="font-bold">Language / اللغة</div>
+                                <div class="text-xs text-gray-400">Switch system layout direction</div>
+                            </div>
+                            <button onclick="toggleLang()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition cursor-pointer">Switch</button>
+                        </div>
+                        
+                        <div class="bg-os-900 border border-white/5 rounded-xl p-4 flex justify-between items-center shadow-sm">
+                            <div>
+                                <div class="font-bold">Theme Mode</div>
+                                <div class="text-xs text-gray-400">Toggle dark and light style</div>
+                            </div>
+                            <button onclick="toggleTheme()" class="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition cursor-pointer">Toggle</button>
+                        </div>
+                        
+                        <div class="mt-auto text-center text-xs text-gray-500 pt-8" dir="ltr">
+                            Desktopy Web Kernel 2.0.0
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 6. System Monitor (Enforced LTR for technical specs)
+        function buildMonitor(id, container) {
+            container.innerHTML = `
+                <div class="h-full bg-os-900 p-4 flex flex-col gap-4 text-sm font-mono text-left" dir="ltr">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-os-800 p-4 rounded-xl border border-white/5">
+                            <div class="text-gray-400 mb-2">CPU Usage</div>
+                            <div class="text-2xl font-bold text-green-400" id="mon-cpu-${id}">12%</div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div class="h-full bg-green-500 transition-all duration-1000" id="mon-cpu-bar-${id}" style="width: 12%"></div></div>
+                        </div>
+                        <div class="bg-os-800 p-4 rounded-xl border border-white/5">
+                            <div class="text-gray-400 mb-2">Memory (RAM)</div>
+                            <div class="text-2xl font-bold text-indigo-400">3.2 GB <span class="text-sm text-gray-500">/ 16 GB</span></div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div class="h-full bg-indigo-500" style="width: 20%"></div></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-os-800 rounded-xl border border-white/5 p-4 overflow-hidden flex flex-col">
+                        <div class="text-gray-400 mb-2 border-b border-white/5 pb-2 flex justify-between"><span>Process Name</span><span>PID</span><span>CPU%</span></div>
+                        <div class="flex-1 overflow-y-auto space-y-2 text-gray-300">
+                            <div class="flex justify-between"><span>desktopy-wm</span><span>1</span><span class="text-green-400">4.2%</span></div>
+                            <div class="flex justify-between"><span>webkit-renderer</span><span>42</span><span class="text-green-400">1.8%</span></div>
+                            <div class="flex justify-between"><span>idle</span><span>0</span><span class="text-gray-500">93.5%</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.dataset.interval = setInterval(() => {
+                const cpuEl = document.getElementById(`mon-cpu-${id}`);
+                const barEl = document.getElementById(`mon-cpu-bar-${id}`);
+                if (!cpuEl) { clearInterval(container.dataset.interval); return; }
+                const val = Math.floor(Math.random() * 20) + 5;
+                cpuEl.innerText = `${val}%`;
+                barEl.style.width = `${val}%`;
+            }, 2000);
+        }
+
+        // 7. Code Editor (Strict LTR)
+        function buildCode(id, container) {
+            container.innerHTML = `
+                <div class="h-full bg-os-900 flex flex-col font-mono text-left" dir="ltr">
+                    <div class="bg-os-800 p-2 border-b border-white/5 text-xs text-gray-400">index.js</div>
+                    <textarea class="flex-1 bg-transparent p-4 text-green-300 text-sm outline-none resize-none" spellcheck="false">
+function init() {
+    console.log("Desktopy IDE Ready.");
+}
+init();</textarea>
+                </div>
+            `;
+        }
+
+        // Generic Fallback App
+        function buildGeneric(id, container, msg, isTechnical = false) {
+            const app = apps[id];
+            const title = i18n[state.lang][id] || id;
+
+            container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center p-8 bg-os-800 text-center relative overflow-hidden">
+                    <div class="w-24 h-24 rounded-3xl bg-os-900 border border-white/10 shadow-xl flex items-center justify-center mb-6 relative z-10">
+                        <i class="ph ph-${app.icon} ${app.color} text-5xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 relative z-10">${title}</h3>
+                    <div class="w-full max-w-sm bg-os-900/80 rounded-lg p-4 border border-white/5 relative z-10 ${isTechnical ? 'text-left font-mono text-green-400' : 'text-gray-400'}" ${isTechnical ? 'dir="ltr"' : ''}>
+                        ${msg}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLauncher() {
+            const grid = document.getElementById('launcher-grid');
+            grid.innerHTML = '';
+            const search = document.getElementById('launcher-search').value.toLowerCase();
+
+            Object.keys(apps).forEach(id => {
+                const name = i18n[state.lang][id] || id;
+                if (search && !name.toLowerCase().includes(search)) return;
+
+                const btn = document.createElement('button');
+                btn.className = "flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/10 transition group cursor-pointer active:scale-95";
+                btn.onclick = () => openApp(id);
+                btn.innerHTML = `
+                    <div class="w-16 h-16 rounded-2xl bg-os-800 border border-white/5 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="ph ph-${apps[id].icon} ${apps[id].color} text-3xl drop-shadow-md"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-300 drop-shadow">${name}</span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function toggleLauncher() {
+            state.launcherOpen = !state.launcherOpen;
+            const overlay = document.getElementById('launcher-overlay');
+            if (state.launcherOpen) {
+                overlay.classList.add('active');
+                renderLauncher();
+                document.getElementById('launcher-search').focus();
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function closeLauncher() { if (state.launcherOpen) toggleLauncher(); }
+        document.getElementById('launcher-search').addEventListener('input', renderLauncher);
+
+        function updateDock() {
+            const pinnedContainer = document.getElementById('dock-pinned');
+            const runningContainer = document.getElementById('dock-running');
+            pinnedContainer.innerHTML = '';
+            runningContainer.innerHTML = '';
+
+            Object.keys(apps).forEach(id => {
+                const isRunning = !!state.windows[id];
+                const isPinned = apps[id].pinned;
+                if (!isPinned && !isRunning) return;
+
+                const btn = document.createElement('button');
+                btn.className = `w-10 h-10 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer
+                    ${isRunning ? 'bg-white/10 hover:bg-white/20' : 'hover:bg-white/5'}`;
+
+                btn.onclick = () => {
+                    if (isRunning) {
+                        if (state.windows[id].minimized) toggleMinimize(id);
+                        else focusWindow(id);
+                    } else openApp(id);
+                };
+
+                btn.innerHTML = `
+                    <i class="ph ph-${apps[id].icon} ${apps[id].color} text-xl transition-transform group-hover:scale-110 group-active:scale-95"></i>
+                    ${isRunning ? '<div class="absolute -bottom-1 w-1 h-1 rounded-full bg-gray-400"></div>' : ''}
+                `;
+
+                const tooltip = document.createElement('div');
+                tooltip.className = "absolute -top-10 bg-os-900 border border-white/10 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap";
+                tooltip.innerText = i18n[state.lang][id] || id;
+                btn.appendChild(tooltip);
+
+                if (isPinned) pinnedContainer.appendChild(btn);
+                else runningContainer.appendChild(btn);
+            });
+
+            document.querySelector('#dock-pinned + div').style.display = runningContainer.children.length ? 'block' : 'none';
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            const icon = document.getElementById('theme-icon');
+
+            if (state.theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light', 'text-gray-800');
+                document.body.classList.remove('text-gray-200');
+                icon.className = 'ph ph-sun text-lg';
+            } else {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('text-gray-200');
+                document.body.classList.remove('light', 'text-gray-800');
+                icon.className = 'ph ph-moon text-lg';
+            }
+        }
+
+        function toggleLang() {
+            state.lang = state.lang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = state.lang;
+            document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+
+            document.getElementById('btn-lang').innerText = state.lang === 'ar' ? 'EN' : 'AR';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[state.lang][key]) el.innerText = i18n[state.lang][key];
+            });
+            document.querySelectorAll('[data-i18n-id]').forEach(el => {
+                const key = el.getAttribute('data-i18n-id');
+                if (i18n[state.lang][key]) el.innerText = i18n[state.lang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (i18n[state.lang][key]) el.setAttribute('placeholder', i18n[state.lang][key]);
+            });
+
+            if (state.launcherOpen) renderLauncher();
+            updateDock();
+            updateClock();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('top-time').innerText = now.toLocaleTimeString(state.lang === 'ar' ? 'ar-BH' : 'en-US', { hour: 'numeric', minute: '2-digit' });
+            document.getElementById('top-date').innerText = now.toLocaleDateString(state.lang === 'ar' ? 'ar-BH' : 'en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Init
+        updateDock();
+        setTimeout(() => openApp('terminal'), 300);
+
+    </script>
+</body>
+
+</html>
