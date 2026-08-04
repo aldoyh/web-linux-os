@@ -1,0 +1,12 @@
+{
+  "name": "web-linux-os",
+  "private": true,
+  "scripts": {
+    "test:e2e": "npx playwright test",
+    "serve": "npx http-server public -p 3000 -c-1 --silent"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "http-server": "^14.1.1"
+  }
+}

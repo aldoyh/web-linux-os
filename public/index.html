@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Desktopy OS</title>
 
-    <!-- Google Fonts: Tajawal for Arabic, Inter for English, Fira Code for Terminal -->
+    <!-- Google Fonts: Tajawal for Arabic, Space Grotesk for English, Fira Code for Terminal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&family=Tajawal:wght@300;400;500;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap"
         rel="stylesheet">
 
     <!-- Tailwind CSS -->
@@ -22,7 +22,7 @@
                 extend: {
                     fontFamily: {
                         ar: ['Tajawal', 'sans-serif'],
-                        en: ['Inter', 'sans-serif'],
+                        en: ['Space Grotesk', 'sans-serif'],
                         mono: ['Fira Code', 'monospace'],
                     },
                     colors: {
@@ -44,35 +44,94 @@
     <style>
         :root {
             --font-primary: 'Tajawal', sans-serif;
+            --accent: #46e6b0;
+            --accent-2: #4c9bff;
         }
 
         html[lang="en"] {
-            --font-primary: 'Inter', sans-serif;
+            --font-primary: 'Space Grotesk', sans-serif;
         }
 
         body {
             font-family: var(--font-primary);
             overflow: hidden;
             user-select: none;
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f1115 60%, #000000 100%);
-            transition: background 0.5s ease;
+            background: radial-gradient(1200px 700px at 50% -10%, #253d80 0%, #101a2e 45%, #05070d 100%);
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
         body.light {
-            background: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f1f5f9 60%, #ffffff 100%);
+            --accent: #0c6bcf;
+            --accent-2: #00a08a;
+            background: radial-gradient(1200px 720px at 50% -10%, #d9ecff 0%, #f4f9ff 55%, #ffffff 100%);
+        }
+
+        .ambient-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .ambient-grid {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 36px 36px;
+            opacity: 0.12;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 82%);
+        }
+
+        .light .ambient-grid {
+            background-image:
+                linear-gradient(rgba(28, 57, 109, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(28, 57, 109, 0.08) 1px, transparent 1px);
+        }
+
+        .ambient-glow::before,
+        .ambient-glow::after {
+            content: "";
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(50px);
+            opacity: 0.45;
+            animation: pulse-float 8s ease-in-out infinite;
+        }
+
+        .ambient-glow::before {
+            width: 360px;
+            height: 360px;
+            top: 14%;
+            left: 10%;
+            background: radial-gradient(circle, rgba(76, 155, 255, 0.65) 0%, rgba(76, 155, 255, 0) 70%);
+        }
+
+        .ambient-glow::after {
+            width: 320px;
+            height: 320px;
+            right: 9%;
+            bottom: 12%;
+            background: radial-gradient(circle, rgba(70, 230, 176, 0.58) 0%, rgba(70, 230, 176, 0) 70%);
+            animation-delay: 1.4s;
+        }
+
+        .light .ambient-glow::before,
+        .light .ambient-glow::after {
+            opacity: 0.28;
         }
 
         /* Premium Glassmorphism */
         .glass-panel {
-            background: rgba(15, 17, 21, 0.6);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(130deg, rgba(13, 20, 36, 0.68), rgba(10, 15, 28, 0.45));
+            backdrop-filter: blur(26px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
         }
 
         .light .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: linear-gradient(130deg, rgba(255, 255, 255, 0.76), rgba(240, 248, 255, 0.65));
+            border: 1px solid rgba(12, 30, 78, 0.12);
+            box-shadow: 0 16px 34px rgba(58, 77, 120, 0.16);
         }
 
         /* Window Mechanics */
@@ -82,13 +141,14 @@
             flex-direction: column;
             border-radius: 0.75rem;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 35px 65px -26px rgba(0, 0, 0, 0.85);
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
             transform-origin: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .light .os-window {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 28px 60px -20px rgba(23, 44, 82, 0.22);
         }
 
         .os-window.minimized {
@@ -128,12 +188,62 @@
             opacity: 0;
             pointer-events: none;
             backdrop-filter: blur(0px);
+            background: linear-gradient(145deg, rgba(7, 13, 24, 0.84), rgba(7, 10, 19, 0.78));
         }
 
         #launcher-overlay.active {
             opacity: 1;
             pointer-events: auto;
             backdrop-filter: blur(24px);
+        }
+
+        .desktop-widget {
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(125deg, rgba(19, 28, 44, 0.62), rgba(11, 17, 29, 0.4));
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            animation: float-in 0.6s ease both;
+        }
+
+        .light .desktop-widget {
+            border-color: rgba(15, 56, 124, 0.12);
+            background: linear-gradient(125deg, rgba(255, 255, 255, 0.85), rgba(244, 250, 255, 0.68));
+            box-shadow: 0 12px 28px rgba(56, 90, 140, 0.12);
+        }
+
+        .accent-chip {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .light .accent-chip {
+            border-color: rgba(11, 63, 135, 0.14);
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        @keyframes float-in {
+            from {
+                transform: translateY(12px) scale(0.98);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-float {
+            0%,
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-18px) scale(1.06);
+            }
         }
 
         ::-webkit-scrollbar {
@@ -157,6 +267,8 @@
 </head>
 
 <body class="w-screen h-screen relative text-gray-200">
+    <div class="ambient-layer ambient-grid"></div>
+    <div class="ambient-layer ambient-glow"></div>
 
     <!-- Top Status Bar -->
     <div
@@ -177,6 +289,7 @@
         </div>
 
         <div class="flex items-center gap-4">
+            <img src="logo.png" alt="Logo" class="h-6 w-auto">
             <button onclick="toggleLang()" id="btn-lang"
                 class="bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded transition cursor-pointer font-bold">EN</button>
             <button onclick="toggleTheme()" class="hover:text-yellow-400 transition cursor-pointer">
@@ -192,7 +305,22 @@
 
     <!-- Desktop Area -->
     <div id="desktop-area"
-        class="absolute top-8 bottom-16 start-0 end-0 p-4 z-10 flex flex-col flex-wrap content-start gap-4"></div>
+        class="absolute top-8 bottom-16 start-0 end-0 p-4 z-10 flex flex-col flex-wrap content-start gap-4 pointer-events-none">
+        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: 0.08s;">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-400">Kernel Health</span>
+                <span class="accent-chip rounded-full px-2 py-0.5 text-[10px]">Stable</span>
+            </div>
+            <div class="text-2xl font-bold mb-2" dir="ltr">99.98%</div>
+            <div class="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div class="h-full rounded-full" style="width: 82%; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div>
+            </div>
+        </div>
+        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: 0.16s;">
+            <div class="text-gray-400 mb-2">Workspace Tip</div>
+            <div class="leading-relaxed">Use launcher search to jump between tools instantly, then pin frequent apps to keep your flow fast.</div>
+        </div>
+    </div>
 
     <!-- Window Management Layer -->
     <div id="window-layer" class="absolute top-8 bottom-16 start-0 end-0 z-20 pointer-events-none"></div>
@@ -212,7 +340,7 @@
 
     <!-- Floating Bottom Dock -->
     <div
-        class="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100] h-14 glass-panel rounded-2xl px-2 flex items-center gap-2 border border-white/10 shadow-2xl">
+        class="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100] h-16 glass-panel rounded-3xl px-3 flex items-center gap-2 border border-white/10 shadow-2xl">
         <div id="dock-pinned" class="flex items-center gap-1"></div>
         <div class="w-px h-8 bg-white/20 mx-1"></div>
         <div id="dock-running" class="flex items-center gap-1"></div>
