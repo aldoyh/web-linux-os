@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "test:e2e": "npx playwright test",
-    "serve": "npx http-server public -p 3000 -c-1 --silent"
+    "serve": "node serve.mjs",
+    "serve:php": "php -S localhost:3000 -t public",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",

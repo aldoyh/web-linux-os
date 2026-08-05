@@ -1,1 +1,4 @@
 node_modules/
+
+# PHP backend runtime data (persisted desktop state + user files)
+public/data/

@@ -4,16 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Desktopy OS — a browser-based desktop whose windows, files and settings persist through a single-file PHP backend.">
     <title>Desktopy OS</title>
 
-    <!-- Google Fonts: Tajawal for Arabic, Space Grotesk for English, Fira Code for Terminal -->
+    <!-- Google Fonts: Tajawal (Arabic), Space Grotesk (English), Fira Code (Terminal) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (Play CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,12 +27,7 @@
                         mono: ['Fira Code', 'monospace'],
                     },
                     colors: {
-                        os: {
-                            900: '#0f1115',
-                            800: '#1a1d24',
-                            700: '#272b36',
-                            accent: '#6366f1',
-                        }
+                        os: { 900: '#0f1115', 800: '#1a1d24', 700: '#272b36', accent: '#6366f1' }
                     }
                 }
             }
@@ -44,26 +40,65 @@
     <style>
         :root {
             --font-primary: 'Tajawal', sans-serif;
-            --accent: #46e6b0;
-            --accent-2: #4c9bff;
+            --accent: #6366f1;
+            --accent-2: #a78bfa;
+            --accent-rgb: 99, 102, 241;
         }
 
         html[lang="en"] {
             --font-primary: 'Space Grotesk', sans-serif;
         }
 
+        body.accent-emerald {
+            --accent: #10b981;
+            --accent-2: #34d399;
+            --accent-rgb: 16, 185, 129;
+        }
+
+        body.accent-rose {
+            --accent: #f43f5e;
+            --accent-2: #fb7185;
+            --accent-rgb: 244, 63, 94;
+        }
+
+        body.accent-amber {
+            --accent: #f59e0b;
+            --accent-2: #fbbf24;
+            --accent-rgb: 245, 158, 11;
+        }
+
+        body.accent-cyan {
+            --accent: #06b6d4;
+            --accent-2: #22d3ee;
+            --accent-rgb: 6, 182, 212;
+        }
+
+        body.accent-violet {
+            --accent: #8b5cf6;
+            --accent-2: #c4b5fd;
+            --accent-rgb: 139, 92, 246;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             font-family: var(--font-primary);
             overflow: hidden;
             user-select: none;
-            background: radial-gradient(1200px 700px at 50% -10%, #253d80 0%, #101a2e 45%, #05070d 100%);
-            transition: background 0.5s ease, color 0.5s ease;
+            color: #e5e7eb;
+            background: radial-gradient(1300px 750px at 50% -10%, #31449b 0%, #141f38 45%, #05070d 100%);
+            transition: background .6s ease, color .6s ease;
         }
 
         body.light {
-            --accent: #0c6bcf;
-            --accent-2: #00a08a;
-            background: radial-gradient(1200px 720px at 50% -10%, #d9ecff 0%, #f4f9ff 55%, #ffffff 100%);
+            color: #1e293b;
+            background: radial-gradient(1300px 780px at 50% -10%, #d9eaff 0%, #f3f8ff 55%, #ffffff 100%);
+        }
+
+        .text-accent {
+            color: var(--accent);
         }
 
         .ambient-layer {
@@ -74,17 +109,17 @@
 
         .ambient-grid {
             background-image:
-                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 36px 36px;
-            opacity: 0.12;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 82%);
+                linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+            background-size: 38px 38px;
+            opacity: .35;
+            mask-image: radial-gradient(circle at 50% 40%, black 25%, transparent 78%);
         }
 
-        .light .ambient-grid {
+        body.light .ambient-grid {
             background-image:
-                linear-gradient(rgba(28, 57, 109, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(28, 57, 109, 0.08) 1px, transparent 1px);
+                linear-gradient(rgba(28, 57, 109, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(28, 57, 109, 0.07) 1px, transparent 1px);
         }
 
         .ambient-glow::before,
@@ -92,46 +127,84 @@
             content: "";
             position: absolute;
             border-radius: 9999px;
-            filter: blur(50px);
-            opacity: 0.45;
-            animation: pulse-float 8s ease-in-out infinite;
+            filter: blur(70px);
+            opacity: .5;
+            animation: pulse-float 9s ease-in-out infinite;
         }
 
         .ambient-glow::before {
-            width: 360px;
-            height: 360px;
-            top: 14%;
-            left: 10%;
-            background: radial-gradient(circle, rgba(76, 155, 255, 0.65) 0%, rgba(76, 155, 255, 0) 70%);
+            width: 420px;
+            height: 420px;
+            top: 12%;
+            left: 8%;
+            background: radial-gradient(circle, rgba(76, 155, 255, 0.7) 0%, rgba(76, 155, 255, 0) 70%);
         }
 
         .ambient-glow::after {
-            width: 320px;
-            height: 320px;
-            right: 9%;
-            bottom: 12%;
-            background: radial-gradient(circle, rgba(70, 230, 176, 0.58) 0%, rgba(70, 230, 176, 0) 70%);
-            animation-delay: 1.4s;
+            width: 360px;
+            height: 360px;
+            right: 8%;
+            bottom: 10%;
+            background: radial-gradient(circle, rgba(70, 230, 176, 0.6) 0%, rgba(70, 230, 176, 0) 70%);
+            animation-delay: 1.6s;
         }
 
-        .light .ambient-glow::before,
-        .light .ambient-glow::after {
-            opacity: 0.28;
+        body.light .ambient-glow::before,
+        body.light .ambient-glow::after {
+            opacity: .3;
+        }
+
+        .ambient-aurora {
+            background:
+                radial-gradient(600px 300px at 85% 85%, rgba(139, 92, 246, 0.16), transparent 60%),
+                radial-gradient(500px 260px at 15% 75%, rgba(6, 182, 212, 0.12), transparent 60%);
+            animation: aurora 14s ease-in-out infinite alternate;
+        }
+
+        body.light .ambient-aurora {
+            opacity: .5;
         }
 
         /* Premium Glassmorphism */
         .glass-panel {
-            background: linear-gradient(130deg, rgba(13, 20, 36, 0.68), rgba(10, 15, 28, 0.45));
-            backdrop-filter: blur(26px);
-            -webkit-backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(13, 20, 36, 0.66), rgba(10, 15, 28, 0.44));
+            backdrop-filter: blur(26px) saturate(1.3);
+            -webkit-backdrop-filter: blur(26px) saturate(1.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .light .glass-panel {
-            background: linear-gradient(130deg, rgba(255, 255, 255, 0.76), rgba(240, 248, 255, 0.65));
-            border: 1px solid rgba(12, 30, 78, 0.12);
-            box-shadow: 0 16px 34px rgba(58, 77, 120, 0.16);
+        body.light .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(240, 248, 255, 0.7));
+            border: 1px solid rgba(12, 30, 78, 0.1);
+            box-shadow: 0 16px 34px rgba(58, 77, 120, 0.14);
+        }
+
+        /* Desktop widgets */
+        .desktop-widget {
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(19, 28, 44, 0.6), rgba(11, 17, 29, 0.38));
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            animation: float-in .6s ease both;
+        }
+
+        body.light .desktop-widget {
+            border-color: rgba(15, 56, 124, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(244, 250, 255, 0.72));
+            box-shadow: 0 12px 28px rgba(56, 90, 140, 0.12);
+        }
+
+        .accent-chip {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        body.light .accent-chip {
+            border-color: rgba(11, 63, 135, 0.14);
+            background: rgba(255, 255, 255, 0.72);
         }
 
         /* Window Mechanics */
@@ -139,116 +212,403 @@
             position: absolute;
             display: flex;
             flex-direction: column;
-            border-radius: 0.75rem;
+            border-radius: .85rem;
             overflow: hidden;
-            box-shadow: 0 35px 65px -26px rgba(0, 0, 0, 0.85);
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
-            transform-origin: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.92), rgba(9, 13, 22, 0.88));
+            box-shadow: 0 40px 70px -30px rgba(0, 0, 0, 0.85);
+            transition: transform .22s cubic-bezier(.2, .8, .2, 1), opacity .22s, box-shadow .3s, border-color .3s;
+            animation: win-in .24s cubic-bezier(.2, .8, .2, 1) both;
         }
 
-        .light .os-window {
-            box-shadow: 0 28px 60px -20px rgba(23, 44, 82, 0.22);
+        body.light .os-window {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 244, 252, 0.95));
+            box-shadow: 0 30px 60px -20px rgba(23, 44, 82, 0.24);
+        }
+
+        .os-window.focused {
+            border-color: rgba(var(--accent-rgb), 0.55);
+            box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(var(--accent-rgb), 0.3),
+                0 0 34px -8px rgba(var(--accent-rgb), 0.35);
         }
 
         .os-window.minimized {
-            transform: scale(0.8) translateY(100px);
+            transform: scale(.82) translateY(140px);
             opacity: 0;
             pointer-events: none;
         }
 
+        .os-window.maximized {
+            border-radius: .55rem;
+        }
+
+        .os-window.dragging {
+            transition: none;
+            opacity: .92;
+        }
+
         .window-header {
             cursor: grab;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+        }
+
+        body.light .window-header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0));
         }
 
         .window-header:active {
             cursor: grabbing;
         }
 
-        .resize-handle {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            /* Universally placed bottom-right for drag logic consistency */
-            width: 15px;
-            height: 15px;
-            cursor: se-resize;
-            z-index: 10;
+        .traffic {
+            width: 12px;
+            height: 12px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: filter .15s;
         }
 
-        html[dir="rtl"] .resize-handle {
-            left: 0;
-            right: auto;
-            cursor: sw-resize;
+        .traffic i {
+            opacity: 0;
+            transition: opacity .15s;
+            font-size: 7px;
         }
+
+        .traffic:hover i {
+            opacity: 1;
+        }
+
+        .resize-handle {
+            position: absolute;
+            z-index: 20;
+        }
+
+        .resize-handle[data-dir="se"] { bottom: -3px; right: -3px; width: 18px; height: 18px; cursor: se-resize; }
+        .resize-handle[data-dir="sw"] { bottom: -3px; left: -3px; width: 18px; height: 18px; cursor: sw-resize; }
+        .resize-handle[data-dir="ne"] { top: -3px; right: -3px; width: 18px; height: 18px; cursor: ne-resize; }
+        .resize-handle[data-dir="nw"] { top: -3px; left: -3px; width: 18px; height: 18px; cursor: nw-resize; }
+        .resize-handle[data-dir="e"]  { top: 0; right: -3px; bottom: 0; width: 8px; cursor: e-resize; }
+        .resize-handle[data-dir="w"]  { top: 0; left: -3px; bottom: 0; width: 8px; cursor: w-resize; }
+        .resize-handle[data-dir="s"]  { left: 0; bottom: -3px; right: 0; height: 8px; cursor: s-resize; }
+        .resize-handle[data-dir="n"]  { left: 0; top: -3px; right: 0; height: 8px; cursor: n-resize; }
 
         /* Launcher */
         #launcher-overlay {
-            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+            transition: opacity .3s ease, backdrop-filter .3s ease;
             opacity: 0;
             pointer-events: none;
             backdrop-filter: blur(0px);
-            background: linear-gradient(145deg, rgba(7, 13, 24, 0.84), rgba(7, 10, 19, 0.78));
+            background: linear-gradient(150deg, rgba(7, 13, 24, 0.82), rgba(7, 10, 19, 0.74));
         }
 
         #launcher-overlay.active {
             opacity: 1;
             pointer-events: auto;
-            backdrop-filter: blur(24px);
+            backdrop-filter: blur(26px);
         }
 
-        .desktop-widget {
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: linear-gradient(125deg, rgba(19, 28, 44, 0.62), rgba(11, 17, 29, 0.4));
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.28);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            animation: float-in 0.6s ease both;
+        body.light #launcher-overlay {
+            background: linear-gradient(150deg, rgba(240, 246, 255, 0.86), rgba(250, 252, 255, 0.82));
         }
 
-        .light .desktop-widget {
-            border-color: rgba(15, 56, 124, 0.12);
-            background: linear-gradient(125deg, rgba(255, 255, 255, 0.85), rgba(244, 250, 255, 0.68));
-            box-shadow: 0 12px 28px rgba(56, 90, 140, 0.12);
+        .launch-tile {
+            transition: transform .18s cubic-bezier(.2, .8, .2, 1), background .18s;
         }
 
-        .accent-chip {
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .launch-tile:hover {
+            transform: translateY(-4px);
             background: rgba(255, 255, 255, 0.08);
         }
 
-        .light .accent-chip {
-            border-color: rgba(11, 63, 135, 0.14);
-            background: rgba(255, 255, 255, 0.72);
+        body.light .launch-tile:hover {
+            background: rgba(15, 23, 42, 0.06);
+        }
+
+        .launch-icon {
+            transition: transform .18s cubic-bezier(.2, .8, .2, 1);
+        }
+
+        .launch-tile:hover .launch-icon {
+            transform: scale(1.12) translateY(-2px);
+        }
+
+        /* Dock */
+        .dock-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform .18s cubic-bezier(.2, .8, .2, 1), background .18s;
+        }
+
+        .dock-btn:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        body.light .dock-btn:hover {
+            background: rgba(15, 23, 42, 0.07);
+        }
+
+        .dock-btn .dot {
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 9999px;
+            background: rgba(156, 163, 175, 0.9);
+        }
+
+        .dock-btn.running .dot {
+            background: var(--accent);
+        }
+
+        .dock-tip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(10, 14, 24, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e5e7eb;
+            padding: 4px 9px;
+            border-radius: .55rem;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s, transform .15s;
+            z-index: 40;
+        }
+
+        .dock-btn:hover .dock-tip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        body.light .dock-tip {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        /* Toasts */
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: .7rem;
+            font-size: 12px;
+            background: rgba(10, 14, 24, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e5e7eb;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(14px);
+            border-inline-start: 3px solid var(--accent);
+            animation: toast-in .25s cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        body.light .toast {
+            background: rgba(255, 255, 255, 0.96);
+            color: #1e293b;
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+
+        .toast.ok { border-inline-start-color: #34d399; }
+        .toast.warn { border-inline-start-color: #fbbf24; }
+        .toast.err { border-inline-start-color: #f87171; }
+
+        /* Context menu */
+        .ctx-menu {
+            min-width: 190px;
+            background: rgba(10, 14, 24, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: .7rem;
+            padding: 5px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            animation: float-in .14s ease both;
+            overflow: hidden;
+        }
+
+        body.light .ctx-menu {
+            background: rgba(255, 255, 255, 0.97);
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+
+        .ctx-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 10px;
+            border-radius: .5rem;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: background .12s;
+        }
+
+        .ctx-item:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        body.light .ctx-item:hover {
+            background: rgba(15, 23, 42, 0.06);
+        }
+
+        .ctx-item.danger {
+            color: #fca5a5;
+        }
+
+        .ctx-item.danger:hover {
+            background: rgba(248, 113, 113, 0.15);
+        }
+
+        .ctx-sep {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.09);
+            margin: 5px 8px;
+        }
+
+        body.light .ctx-sep {
+            background: rgba(15, 23, 42, 0.09);
+        }
+
+        /* Modals */
+        #modal-root {
+            background: rgba(4, 7, 15, 0.5);
+            backdrop-filter: blur(6px);
+            animation: fade-in .18s ease both;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(13, 19, 32, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 1rem;
+            padding: 20px;
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+            animation: float-in .2s cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        body.light .modal-card {
+            background: rgba(255, 255, 255, 0.99);
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        .modal-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: .6rem;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: inherit;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .modal-input:focus {
+            border-color: var(--accent);
+        }
+
+        body.light .modal-input {
+            background: rgba(15, 23, 42, 0.05);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            font-weight: 600;
+            border-radius: .6rem;
+            padding: 7px 14px;
+            font-size: 12.5px;
+            transition: filter .15s, transform .1s;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover { filter: brightness(1.12); }
+        .btn-primary:active { transform: scale(.96); }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: .6rem;
+            padding: 7px 14px;
+            font-size: 12.5px;
+            transition: background .15s;
+            cursor: pointer;
+        }
+
+        .btn-ghost:hover { background: rgba(255, 255, 255, 0.14); }
+
+        body.light .btn-ghost {
+            background: rgba(15, 23, 42, 0.06);
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        body.light .btn-ghost:hover { background: rgba(15, 23, 42, 0.1); }
+
+        /* Misc */
+        kbd {
+            font-family: var(--font-primary);
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .shimmer {
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
         }
 
         @keyframes float-in {
-            from {
-                transform: translateY(12px) scale(0.98);
-                opacity: 0;
-            }
+            from { transform: translateY(12px) scale(.97); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
 
-            to {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes win-in {
+            from { transform: scale(.93) translateY(16px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes toast-in {
+            from { transform: translateY(14px) scale(.96); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         @keyframes pulse-float {
-            0%,
-            100% {
-                transform: translateY(0px) scale(1);
-            }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.07); }
+        }
 
-            50% {
-                transform: translateY(-18px) scale(1.06);
-            }
+        @keyframes aurora {
+            0% { transform: translateX(-3%) rotate(0deg); }
+            100% { transform: translateX(3%) rotate(2deg); }
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
         }
 
         ::-webkit-scrollbar-track {
@@ -256,12 +616,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.3);
+            background: rgba(156, 163, 175, 0.28);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(156, 163, 175, 0.5);
+            background: rgba(156, 163, 175, 0.45);
         }
     </style>
 </head>
@@ -269,84 +629,153 @@
 <body class="w-screen h-screen relative text-gray-200">
     <div class="ambient-layer ambient-grid"></div>
     <div class="ambient-layer ambient-glow"></div>
+    <div class="ambient-layer ambient-aurora"></div>
 
     <!-- Top Status Bar -->
     <div
-        class="h-8 w-full glass-panel fixed top-0 start-0 end-0 z-[100] flex items-center justify-between px-4 text-xs font-medium">
-        <div class="flex items-center gap-4">
+        class="h-9 w-full glass-panel fixed top-0 start-0 end-0 z-[100] flex items-center justify-between px-3 text-xs font-medium border-b border-white/5">
+        <div class="flex items-center gap-1">
             <button onclick="toggleLauncher()"
-                class="hover:text-indigo-400 transition flex items-center gap-1 cursor-pointer">
-                <i class="ph ph-squares-four text-lg"></i>
+                class="hover:bg-white/10 rounded-lg px-3 py-1.5 transition flex items-center gap-2 cursor-pointer">
+                <i class="ph ph-squares-four text-lg text-indigo-300"></i>
                 <span data-i18n="activities">الأنشطة</span>
             </button>
-            <div id="active-app-title" class="hidden md:block font-bold text-indigo-300">Desktopy OS</div>
+            <div class="w-px h-5 bg-white/10 mx-1"></div>
+            <button onclick="focusActiveApp()"
+                class="hidden md:flex items-center gap-2 hover:bg-white/10 rounded-lg px-3 py-1.5 transition cursor-pointer max-w-[240px]">
+                <div id="active-app-title" class="font-bold text-accent truncate">Desktopy OS</div>
+            </button>
         </div>
 
-        <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 cursor-pointer hover:text-white transition"
-            dir="ltr">
-            <span id="top-date"></span>
-            <span id="top-time" class="font-bold"></span>
+        <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-3" dir="ltr">
+            <span id="top-date" class="text-gray-400"></span>
+            <span id="top-time" class="font-bold tabular-nums text-gray-100"></span>
         </div>
 
-        <div class="flex items-center gap-4">
-            <img src="logo.png" alt="Logo" class="h-6 w-auto">
+        <div class="flex items-center gap-2">
+            <img src="logo.png" alt="Logo" class="h-5 w-auto rounded">
             <button onclick="toggleLang()" id="btn-lang"
-                class="bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded transition cursor-pointer font-bold">EN</button>
-            <button onclick="toggleTheme()" class="hover:text-yellow-400 transition cursor-pointer">
+                class="bg-white/10 hover:bg-white/20 rounded-lg px-2.5 py-1 transition cursor-pointer font-bold text-[11px]">EN</button>
+            <button onclick="toggleTheme()" class="hover:bg-white/10 rounded-lg p-1.5 transition cursor-pointer"
+                title="Toggle theme">
                 <i id="theme-icon" class="ph ph-moon text-lg"></i>
             </button>
-            <div class="flex items-center gap-2" dir="ltr">
+            <div class="flex items-center gap-1.5 text-gray-400" dir="ltr">
                 <i class="ph ph-wifi-high text-sm"></i>
                 <i class="ph ph-speaker-high text-sm"></i>
                 <i class="ph ph-battery-full text-sm text-green-400"></i>
             </div>
+            <div class="w-px h-5 bg-white/10 mx-1"></div>
+            <button onclick="resetDesktopConfirm()" class="hover:bg-red-500/20 hover:text-red-300 rounded-lg p-1.5 transition cursor-pointer"
+                title="Reset desktop">
+                <i class="ph ph-power text-lg"></i>
+            </button>
         </div>
     </div>
 
-    <!-- Desktop Area -->
+    <!-- Desktop Widgets -->
     <div id="desktop-area"
-        class="absolute top-8 bottom-16 start-0 end-0 p-4 z-10 flex flex-col flex-wrap content-start gap-4 pointer-events-none">
-        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: 0.08s;">
+        class="absolute top-14 bottom-16 start-0 end-0 p-5 z-10 flex flex-col flex-wrap content-start gap-4 pointer-events-none">
+        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: .08s">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-gray-400">Kernel Health</span>
-                <span class="accent-chip rounded-full px-2 py-0.5 text-[10px]">Stable</span>
+                <span class="flex items-center gap-2 text-gray-400 font-medium">
+                    <i class="ph ph-shield-check text-indigo-300"></i> Kernel Health
+                </span>
+                <span class="accent-chip rounded-full px-2 py-0.5 text-[10px] flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>Stable
+                </span>
             </div>
-            <div class="text-2xl font-bold mb-2" dir="ltr">99.98%</div>
+            <div class="flex items-end justify-between mb-2">
+                <div class="text-2xl font-bold" dir="ltr">99.98%</div>
+                <div class="text-[10px] text-gray-500">uptime 12d 4h</div>
+            </div>
             <div class="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <div class="h-full rounded-full" style="width: 82%; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div>
+                <div class="h-full rounded-full shimmer"
+                    style="width: 82%; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div>
             </div>
         </div>
-        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: 0.16s;">
-            <div class="text-gray-400 mb-2">Workspace Tip</div>
-            <div class="leading-relaxed">Use launcher search to jump between tools instantly, then pin frequent apps to keep your flow fast.</div>
+
+        <div class="desktop-widget p-4 w-64 text-xs pointer-events-auto" style="animation-delay: .16s">
+            <div class="flex items-center justify-between mb-3">
+                <span class="flex items-center gap-2 text-gray-400 font-medium">
+                    <i class="ph ph-chart-line-up text-emerald-300"></i> System
+                </span>
+                <span class="accent-chip rounded-full px-2 py-0.5 text-[10px]">Live</span>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-500">CPU</span>
+                        <span class="tabular-nums" id="w-cpu">—</span>
+                    </div>
+                    <div class="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-700" id="w-cpu-bar"
+                            style="width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2));"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-500">RAM</span>
+                        <span class="tabular-nums" id="w-ram">—</span>
+                    </div>
+                    <div class="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-700" id="w-ram-bar"
+                            style="width: 0%; background: linear-gradient(90deg, #34d399, #22d3ee);"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between pt-1 border-t border-white/5">
+                    <span class="text-gray-500">Storage</span>
+                    <span class="tabular-nums text-gray-300" id="w-disk">—</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Window Management Layer -->
-    <div id="window-layer" class="absolute top-8 bottom-16 start-0 end-0 z-20 pointer-events-none"></div>
+    <div id="window-layer" class="absolute top-9 bottom-16 start-0 end-0 z-20 pointer-events-none"></div>
 
     <!-- App Launcher -->
-    <div id="launcher-overlay" class="fixed inset-0 z-[90] bg-os-900/80 flex flex-col pt-16 pb-24 px-8 items-center">
-        <div class="w-full max-w-xl relative mb-8">
-            <i class="ph ph-magnifying-glass absolute top-3 start-4 text-gray-400 text-lg"></i>
+    <div id="launcher-overlay" class="fixed inset-0 z-[90] flex flex-col pt-14 pb-20 px-8 items-center">
+        <div class="w-full max-w-xl relative mb-6">
+            <i class="ph ph-magnifying-glass absolute top-3.5 start-4 text-gray-400 text-lg"></i>
             <input type="text" id="launcher-search" data-i18n-placeholder="search_apps"
                 placeholder="اكتب للبحث عن التطبيقات..."
-                class="w-full bg-white/10 border border-white/20 rounded-xl py-3 ps-12 pe-4 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:bg-white/20 transition backdrop-blur-md">
+                class="w-full bg-white/10 border border-white/15 rounded-2xl py-3 ps-12 pe-10 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:bg-white/15 transition backdrop-blur-md shadow-xl">
+            <kbd class="absolute top-3.5 end-4 text-[10px] text-gray-400 bg-white/10 rounded px-1.5 py-0.5">Esc</kbd>
         </div>
         <div id="launcher-grid"
-            class="flex-1 w-full max-w-5xl overflow-y-auto grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-8 content-start pb-10">
+            class="flex-1 w-full max-w-5xl overflow-y-auto grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-7 content-start pb-8">
+        </div>
+        <div class="mt-4 flex items-center gap-4 text-[10px] text-gray-500">
+            <span><kbd class="bg-white/10 rounded px-1.5 py-0.5">Ctrl</kbd>+<kbd
+                    class="bg-white/10 rounded px-1.5 py-0.5">K</kbd> launcher</span>
+            <span>double-click a window header to maximize</span>
+            <span id="launcher-status"></span>
         </div>
     </div>
 
-    <!-- Floating Bottom Dock -->
-    <div
-        class="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100] h-16 glass-panel rounded-3xl px-3 flex items-center gap-2 border border-white/10 shadow-2xl">
+    <!-- Floating Dock -->
+    <div id="dock"
+        class="fixed bottom-3 left-1/2 -translate-x-1/2 z-[100] glass-panel rounded-2xl px-2.5 py-1.5 flex items-center gap-1 border-white/10 shadow-2xl">
         <div id="dock-pinned" class="flex items-center gap-1"></div>
-        <div class="w-px h-8 bg-white/20 mx-1"></div>
+        <div class="w-px h-8 bg-white/10 mx-1" id="dock-sep" style="display: none"></div>
         <div id="dock-running" class="flex items-center gap-1"></div>
     </div>
 
+    <!-- Overlay UI: context menu, toasts, modals -->
+    <div id="ctx-menu" class="hidden fixed z-[200]"></div>
+    <div id="toasts" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] flex flex-col items-center gap-2 pointer-events-none"></div>
+    <div id="modal-root" class="hidden fixed inset-0 z-[250] flex items-center justify-center p-6"></div>
+
     <script>
+        /* ============================================================
+         * Desktopy OS — frontend
+         * Windows, files and settings persist via the single-file PHP
+         * backend (api.php). When PHP is unreachable we fall back to
+         * localStorage so the desktop still works anywhere.
+         * ============================================================ */
+
+        /* ---------- i18n ---------- */
         const i18n = {
             ar: {
                 activities: "الأنشطة", search_apps: "اكتب للبحث عن التطبيقات...",
@@ -365,7 +794,26 @@
                 unit: "الوحدات", currency: "العملات", stop: "ساعة الإيقاف",
                 pomodoro: "بومودورو", fitness: "اللياقة", recipes: "الطبخ",
                 expenses: "المصروفات", stock: "الأسهم", news: "الأخبار",
-                books: "الكتب", podcasts: "البودكاست", piano: "البيانو"
+                books: "الكتب", podcasts: "البودكاست", piano: "البيانو",
+                ok: "موافق", cancel: "إلغاء", close: "إغلاق", confirm: "تأكيد",
+                delete: "حذف", rename: "إعادة تسمية", refresh: "تحديث",
+                new_file: "ملف جديد", new_folder: "مجلد جديد", preview: "معاينة",
+                back: "رجوع", up: "أعلى", empty_folder: "هذا المجلد فارغ",
+                name: "الاسم", size: "الحجم", modified: "آخر تعديل", items: "عناصر",
+                folder: "مجلد", file: "ملف", backend_online: "خادم PHP متصل",
+                backend_offline: "خادم PHP غير متصل — يُحفظ محلياً في المتصفح",
+                state_saved: "تم حفظ حالة سطح المكتب", accent_color: "لون التمييز",
+                theme_mode: "الوضع", language: "اللغة", system: "النظام", appearance: "المظهر",
+                about: "حول", storage: "التخزين", reset_desktop: "إعادة ضبط سطح المكتب",
+                reset_confirm: "سيتم حذف كل الحالة المحفوظة وإعادة التحميل. متابعة؟",
+                new_terminal: "طرفية جديدة", open_settings: "الإعدادات",
+                new_folder_prompt: "اسم المجلد الجديد", new_file_prompt: "اسم الملف الجديد",
+                rename_prompt: "الاسم الجديد", delete_confirm: "هل تريد حذف هذا العنصر؟",
+                dark: "داكن", light: "فاتح", online: "متصل", offline: "غير متصل",
+                version: "الإصدار", name_prompt: "الاسم", items_count: "عنصر",
+                preview_of: "معاينة", saving: "جارٍ الحفظ...", saved: "تم الحفظ",
+                error: "خطأ", file_deleted: "تم حذف الملف", created: "تم الإنشاء",
+                renamed: "تمت إعادة التسمية", saved_file: "تم حفظ الملف"
             },
             en: {
                 activities: "Activities", search_apps: "Type to search apps...",
@@ -384,36 +832,421 @@
                 unit: "Units", currency: "Currency", stop: "Stopwatch",
                 pomodoro: "Pomodoro", fitness: "Fitness", recipes: "Recipes",
                 expenses: "Expenses", stock: "Stocks", news: "News",
-                books: "Books", podcasts: "Podcasts", piano: "Piano"
+                books: "Books", podcasts: "Podcasts", piano: "Piano",
+                ok: "OK", cancel: "Cancel", close: "Close", confirm: "Confirm",
+                delete: "Delete", rename: "Rename", refresh: "Refresh",
+                new_file: "New File", new_folder: "New Folder", preview: "Preview",
+                back: "Back", up: "Up", empty_folder: "This folder is empty",
+                name: "Name", size: "Size", modified: "Modified", items: "items",
+                folder: "Folder", file: "File", backend_online: "PHP backend online",
+                backend_offline: "PHP backend offline — saving locally in the browser",
+                state_saved: "Desktop state saved", accent_color: "Accent Color",
+                theme_mode: "Theme Mode", language: "Language", system: "System", appearance: "Appearance",
+                about: "About", storage: "Storage", reset_desktop: "Reset Desktop",
+                reset_confirm: "This deletes all saved state and reloads. Continue?",
+                new_terminal: "New Terminal", open_settings: "Settings",
+                new_folder_prompt: "New folder name", new_file_prompt: "New file name",
+                rename_prompt: "New name", delete_confirm: "Delete this item?",
+                dark: "Dark", light: "Light", online: "Online", offline: "Offline",
+                version: "Version", name_prompt: "Name", items_count: "items",
+                preview_of: "Preview of", saving: "Saving...", saved: "Saved",
+                error: "Error", file_deleted: "File deleted", created: "Created",
+                renamed: "Renamed", saved_file: "File saved"
             }
         };
 
+        const T = (k) => (i18n[state.lang] && i18n[state.lang][k]) || k;
+
+        // Escape user/file content before it touches innerHTML.
+        const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        /* ---------- state ---------- */
         const state = {
-            lang: 'ar', theme: 'dark', launcherOpen: false,
-            windows: {}, zIndexCounter: 100
+            lang: 'ar',
+            theme: 'dark',
+            accent: 'indigo',
+            launcherOpen: false,
+            notes: '',
+            history: [],
+            zIndexCounter: 100,
+            windows: {},          // id -> { element, minimized, maximized, rect, z }
+            backend: false,       // is the PHP backend reachable?
+            activeId: null
         };
 
-        const apps = {
-            terminal: { icon: 'terminal-window', color: 'text-green-400', pinned: true, run: (id, el) => buildTerminal(id, el) },
-            calc: { icon: 'calculator', color: 'text-orange-400', pinned: true, run: (id, el) => buildCalculator(id, el) },
-            paint: { icon: 'palette', color: 'text-pink-400', pinned: true, run: (id, el) => buildPaint(id, el) },
-            editor: { icon: 'notepad', color: 'text-blue-400', pinned: true, run: (id, el) => buildEditor(id, el) },
-            tictactoe: { icon: 'hash', color: 'text-purple-400', pinned: false, run: (id, el) => buildTicTacToe(id, el) },
-            settings: { icon: 'gear', color: 'text-gray-400', pinned: true, run: (id, el) => buildSettings(id, el) },
-            monitor: { icon: 'chart-line-up', color: 'text-red-400', pinned: false, run: (id, el) => buildMonitor(id, el) },
-            code: { icon: 'code', color: 'text-blue-400', pinned: true, run: (id, el) => buildCode(id, el) },
-            regex: { icon: 'brackets-curly', color: 'text-yellow-400', pinned: false, run: (id, el) => buildGeneric(id, el, "PCRE engine active. /^([a-z0-9_.-]+)@([da-z.-]+).([a-z.]{2,6})$/", true) },
-            base64: { icon: 'arrows-left-right', color: 'text-blue-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Encoder ready. RXhhbXBsZSBCYXNlNjQgU3RyaW5n", true) },
-            files: { icon: 'folder-open', color: 'text-blue-500', pinned: true, run: (id, el) => buildGeneric(id, el, "File System explorer UI sandbox.") },
-            browser: { icon: 'globe', color: 'text-cyan-400', pinned: true, run: (id, el) => buildGeneric(id, el, "Webkit wrapper mock initialized.") },
-            tasks: { icon: 'check-square', color: 'text-green-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Task manager loaded.") },
-            weather: { icon: 'cloud-sun', color: 'text-yellow-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Fetching Bahrain MET data...") },
-            clock: { icon: 'clock', color: 'text-gray-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Timezone synced with host.") },
-            calendar: { icon: 'calendar-blank', color: 'text-red-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Event matrix loaded.") },
-            store: { icon: 'shopping-bag', color: 'text-orange-500', pinned: false, run: (id, el) => buildGeneric(id, el, "Fetching apt repositories.") },
-            sysinfo: { icon: 'info', color: 'text-gray-300', pinned: false, run: (id, el) => buildGeneric(id, el, "Desktopy Web Kernel 1.0.0") },
-            piano: { icon: 'piano-keys', color: 'text-white', pinned: false, run: (id, el) => buildGeneric(id, el, "WebAudio API synths ready.") }
+        /* ---------- PHP backend client (single-file api.php) ---------- */
+        const Backend = {
+            base: 'api.php',
+            async call(action, params = {}, method = 'GET', body = null) {
+                const qs = new URLSearchParams(params).toString();
+                const url = `${this.base}?action=${action}${qs ? '&' + qs : ''}`;
+                const opts = {
+                    method,
+                    headers: body ? { 'Content-Type': 'application/json' } : {},
+                    keepalive: method === 'POST'
+                };
+                if (body) opts.body = JSON.stringify(body);
+                try {
+                    const res = await fetch(url, opts);
+                    return await res.json();
+                } catch (e) {
+                    return { ok: false, error: String((e && e.message) || e) };
+                }
+            },
+            async init() {
+                const r = await this.call('ping');
+                this.available = !!(r && r.ok);
+                this.phpVersion = (r && r.php) ? r.php : null;
+                return this.available;
+            },
+            loadState: () => Backend.call('state'),
+            saveState: (data) => Backend.call('state', {}, 'POST', { data }),
+            reset: () => Backend.call('reset', {}, 'POST'),
+            ls: (path) => Backend.call('ls', { path }),
+            read: (path) => Backend.call('read', { path }),
+            write: (path, content) => Backend.call('write', {}, 'POST', { path, content }),
+            mkdir: (path) => Backend.call('mkdir', {}, 'POST', { path }),
+            rm: (path) => Backend.call('rm', {}, 'POST', { path }),
+            mv: (path, dest) => Backend.call('mv', {}, 'POST', { path, dest }),
+            disk: () => Backend.call('disk')
         };
+
+        /* ---------- persistence ---------- */
+        function snapshot() {
+            const wins = {};
+            for (const id in state.windows) {
+                const w = state.windows[id];
+                const rect = w.rect || currentRect(w.element);
+                wins[id] = {
+                    x: Math.round(rect.x),
+                    y: Math.round(rect.y),
+                    w: Math.round(rect.w),
+                    h: Math.round(rect.h),
+                    minimized: !!w.minimized,
+                    maximized: !!w.maximized,
+                    z: w.z || 0
+                };
+            }
+            return {
+                theme: state.theme,
+                lang: state.lang,
+                accent: state.accent,
+                launcher: state.launcherOpen,
+                notes: state.notes,
+                history: state.history,
+                zIndex: state.zIndexCounter,
+                windows: wins
+            };
+        }
+
+        function fallbackSave(snap) {
+            try { localStorage.setItem('desktopy:state', JSON.stringify(snap)); } catch (e) { /* ignore */ }
+        }
+
+        function fallbackLoad() {
+            try {
+                const raw = localStorage.getItem('desktopy:state');
+                if (raw) return { fresh: false, data: JSON.parse(raw) };
+            } catch (e) { /* ignore */ }
+            return { fresh: true, data: null };
+        }
+
+        async function loadPersisted() {
+            if (state.backend) {
+                const r = await Backend.loadState();
+                if (r && r.ok) return { fresh: !!r.fresh, data: r.data };
+            }
+            return fallbackLoad();
+        }
+
+        function saveStateNow() {
+            if (state.suppressSave) return;
+            const snap = snapshot();
+            const done = () => document.dispatchEvent(new CustomEvent('desktopy:saved'));
+            if (state.backend) {
+                Backend.saveState(snap).then((r) => {
+                    if (!r.ok) fallbackSave(snap);
+                    done();
+                }).catch(() => { fallbackSave(snap); done(); });
+            } else {
+                fallbackSave(snap);
+                done();
+            }
+        }
+
+        let saveTimer = null;
+        function saveStateDebounced() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveStateNow, 400);
+        }
+
+        function flushSave() {
+            clearTimeout(saveTimer);
+            saveStateNow();
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') flushSave();
+        });
+        window.addEventListener('beforeunload', flushSave);
+
+        /* ---------- toasts ---------- */
+        function toast(msg, type = 'info', ms = 2600) {
+            const root = document.getElementById('toasts');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            const icon = type === 'ok' ? 'ph-check-circle' : type === 'warn' ? 'ph-warning' : type === 'err' ? 'ph-x-circle' : 'ph-info';
+            el.innerHTML = `<i class="ph ${icon} text-base"></i><span>${msg}</span>`;
+            root.appendChild(el);
+            setTimeout(() => {
+                el.style.transition = 'opacity .3s, transform .3s';
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(10px)';
+                setTimeout(() => el.remove(), 320);
+            }, ms);
+        }
+
+        /* ---------- modals (prompt / confirm / preview) ---------- */
+        let modalActive = false;
+
+        function openModal({ title, html, buttons, onOpen }) {
+            if (modalActive) return Promise.resolve(null);
+            modalActive = true;
+            const root = document.getElementById('modal-root');
+            root.classList.remove('hidden');
+            root.innerHTML = `
+                <div class="modal-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm">${title}</h3>
+                        <button onclick="closeModal(null)" class="text-gray-500 hover:text-gray-300 transition cursor-pointer"><i class="ph ph-x text-lg"></i></button>
+                    </div>
+                    ${html}
+                    <div class="flex justify-end gap-2 mt-5" id="modal-actions"></div>
+                </div>`;
+            const actions = document.getElementById('modal-actions');
+            buttons.forEach((b) => {
+                const btn = document.createElement('button');
+                btn.className = b.kind === 'primary' ? 'btn-primary' : 'btn-ghost';
+                btn.innerText = b.label;
+                btn.onclick = () => closeModal(b.value !== undefined ? b.value : b.label);
+                actions.appendChild(btn);
+            });
+            if (onOpen) onOpen(root);
+            return new Promise((resolve) => {
+                root.dataset.resolve = '';
+                root._resolve = resolve;
+            });
+        }
+
+        function closeModal(value) {
+            const root = document.getElementById('modal-root');
+            if (!modalActive) return;
+            modalActive = false;
+            root.classList.add('hidden');
+            root.innerHTML = '';
+            if (root._resolve) root._resolve(value);
+            root._resolve = null;
+        }
+
+        function promptBox(title, defValue = '', placeholder = '') {
+            let val = defValue;
+            return openModal({
+                title: esc(title),
+                html: `<input type="text" id="modal-input" class="modal-input" value="${esc(defValue)}" placeholder="${esc(placeholder)}">`,
+                buttons: [
+                    { label: T('cancel'), value: null },
+                    { label: T('ok'), kind: 'primary', value: '__ok__' }
+                ],
+                onOpen: (root) => {
+                    const inp = root.querySelector('#modal-input');
+                    inp.focus();
+                    inp.select();
+                    inp.addEventListener('input', () => { val = inp.value; });
+                    inp.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') closeModal('__ok__');
+                        if (e.key === 'Escape') closeModal(null);
+                    });
+                }
+            }).then((v) => (v === '__ok__' ? val : null));
+        }
+
+        function confirmBox(title, message, okLabel) {
+            return openModal({
+                title,
+                html: `<p class="text-xs text-gray-400 leading-relaxed">${message}</p>`,
+                buttons: [
+                    { label: T('cancel'), value: false },
+                    { label: okLabel || T('confirm'), kind: 'primary', value: true }
+                ]
+            }).then((v) => v === true);
+        }
+
+        function previewBox(title, content) {
+            return openModal({
+                title: esc(title),
+                html: `<pre class="max-h-[46vh] overflow-auto bg-white/5 border border-white/10 rounded-lg p-3 text-[11px] leading-relaxed font-mono whitespace-pre-wrap" dir="ltr">${esc(content)}</pre>`,
+                buttons: [{ label: T('close'), kind: 'primary', value: true }]
+            });
+        }
+
+        /* ---------- context menu ---------- */
+        function showContextMenu(x, y, items) {
+            const menu = document.getElementById('ctx-menu');
+            menu.innerHTML = `<div class="ctx-menu">${items.map((it) => it.sep
+                ? '<div class="ctx-sep"></div>'
+                : `<div class="ctx-item ${it.danger ? 'danger' : ''}" data-k="${it.key}"><i class="ph ph-${it.icon} text-sm"></i><span>${it.label}</span></div>`
+            ).join('')}</div>`;
+            menu.classList.remove('hidden');
+            const w = menu.offsetWidth, h = menu.offsetHeight;
+            menu.style.left = Math.min(x, window.innerWidth - w - 8) + 'px';
+            menu.style.top = Math.min(y, window.innerHeight - h - 8) + 'px';
+            menu.querySelectorAll('.ctx-item').forEach((el) => {
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    hideContextMenu();
+                    const it = items.find((i) => i.key === el.dataset.k);
+                    if (it && it.action) it.action();
+                };
+            });
+        }
+
+        function hideContextMenu() {
+            const menu = document.getElementById('ctx-menu');
+            menu.classList.add('hidden');
+            menu.innerHTML = '';
+        }
+
+        document.addEventListener('click', hideContextMenu);
+        document.addEventListener('contextmenu', (e) => {
+            if (!e.target.closest('.os-window')) {
+                e.preventDefault();
+                showDesktopMenu(e.clientX, e.clientY);
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideContextMenu();
+                closeModal(null);
+                if (state.launcherOpen) toggleLauncher();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                toggleLauncher();
+            }
+        });
+
+        /* ---------- apps registry ---------- */
+        const apps = {
+            terminal: { icon: 'terminal-window', color: 'text-green-400', pinned: true, size: [680, 440], run: (id, el) => buildTerminal(id, el) },
+            files: { icon: 'folder-open', color: 'text-blue-400', pinned: true, size: [820, 520], run: (id, el) => buildFiles(id, el) },
+            editor: { icon: 'notepad', color: 'text-blue-300', pinned: true, size: [640, 480], run: (id, el) => buildEditor(id, el) },
+            settings: { icon: 'gear', color: 'text-gray-300', pinned: true, size: [680, 500], run: (id, el) => buildSettings(id, el) },
+            calc: { icon: 'calculator', color: 'text-orange-400', pinned: true, size: [360, 520], run: (id, el) => buildCalculator(id, el) },
+            paint: { icon: 'palette', color: 'text-pink-400', pinned: true, size: [720, 540], run: (id, el) => buildPaint(id, el) },
+            code: { icon: 'code', color: 'text-indigo-400', pinned: true, size: [720, 480], run: (id, el) => buildCode(id, el) },
+            monitor: { icon: 'chart-line-up', color: 'text-red-400', pinned: false, size: [720, 500], run: (id, el) => buildMonitor(id, el) },
+            tictactoe: { icon: 'hash', color: 'text-purple-400', pinned: false, size: [380, 440], run: (id, el) => buildTicTacToe(id, el) },
+            regex: { icon: 'brackets-curly', color: 'text-yellow-400', pinned: false, size: [560, 400], run: (id, el) => buildGeneric(id, el, 'PCRE engine active. /^([a-z0-9_.-]+)@([da-z.-]+).([a-z.]{2,6})$/', true) },
+            base64: { icon: 'arrows-left-right', color: 'text-blue-300', pinned: false, size: [560, 400], run: (id, el) => buildGeneric(id, el, 'Encoder ready. RXhhbXBsZSBCYXNlNjQgU3RyaW5n', true) },
+            browser: { icon: 'globe', color: 'text-cyan-400', pinned: true, size: [760, 520], run: (id, el) => buildGeneric(id, el, 'Webkit wrapper mock initialized.') },
+            tasks: { icon: 'check-square', color: 'text-green-500', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Task manager loaded.') },
+            weather: { icon: 'cloud-sun', color: 'text-yellow-500', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Fetching Bahrain MET data...') },
+            clock: { icon: 'clock', color: 'text-gray-300', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Timezone synced with host.') },
+            calendar: { icon: 'calendar-blank', color: 'text-red-500', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Event matrix loaded.') },
+            store: { icon: 'shopping-bag', color: 'text-orange-500', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Fetching apt repositories.') },
+            sysinfo: { icon: 'info', color: 'text-gray-300', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'Desktopy Web Kernel 1.0.0') },
+            piano: { icon: 'piano-keys', color: 'text-white', pinned: false, size: [560, 420], run: (id, el) => buildGeneric(id, el, 'WebAudio API synths ready.') }
+        };
+
+        /* ---------- window manager ---------- */
+        function currentRect(win) {
+            return {
+                x: parseFloat(win.style.left) || 0,
+                y: parseFloat(win.style.top) || 0,
+                w: win.offsetWidth || 680,
+                h: win.offsetHeight || 440
+            };
+        }
+
+        function layerRect() {
+            const layer = document.getElementById('window-layer');
+            return { w: layer.clientWidth, h: layer.clientHeight };
+        }
+
+        function createWindow(id, opts = {}) {
+            if (!apps[id]) return null;
+            const layer = document.getElementById('window-layer');
+            const [dw, dh] = apps[id].size;
+            const z = opts.z || (state.zIndexCounter + 1);
+            state.zIndexCounter = Math.max(state.zIndexCounter, z);
+
+            const win = document.createElement('div');
+            win.id = `win-${id}`;
+            win.className = 'os-window text-gray-200 pointer-events-auto';
+            win.style.zIndex = z;
+            win.style.width = (opts.rect ? opts.rect.w : dw) + 'px';
+            win.style.height = (opts.rect ? opts.rect.h : dh) + 'px';
+
+            // Initial placement (cascade) when no rect is supplied.
+            const count = Object.keys(state.windows).length;
+            const offset = count * 28;
+            const L = layerRect();
+            let x, y;
+            if (opts.rect) {
+                x = Math.max(6, Math.min(opts.rect.x, L.w - 90));
+                y = Math.max(6, Math.min(opts.rect.y, L.h - 60));
+            } else if (state.lang === 'ar') {
+                x = Math.max(6, L.w - (opts.rect ? opts.rect.w : dw) - 110 - offset);
+                y = 64 + offset;
+            } else {
+                x = Math.min(L.w - (opts.rect ? opts.rect.w : dw) - 6, 110 + offset);
+                y = 64 + offset;
+            }
+            win.style.left = x + 'px';
+            win.style.top = y + 'px';
+
+            const title = i18n[state.lang][id] || id;
+            win.innerHTML = `
+                <div class="window-header h-10 border-b border-white/5 flex items-center px-3 gap-2 select-none relative shrink-0" dir="ltr">
+                    <div class="flex items-center gap-1.5">
+                        <button class="traffic bg-red-500 hover:bg-red-400 btn-close" onclick="closeApp('${id}')" title="Close"><i class="ph ph-x"></i></button>
+                        <button class="traffic bg-yellow-500 hover:bg-yellow-400" onclick="toggleMinimize('${id}')" title="Minimize"><i class="ph ph-minus"></i></button>
+                        <button class="traffic bg-green-500 hover:bg-green-400" onclick="toggleMaximize('${id}')" title="Maximize"><i class="ph ph-arrows-out"></i></button>
+                    </div>
+                    <div class="flex items-center gap-2 flex-1 min-w-0 justify-center">
+                        <i class="ph ph-${apps[id].icon} ${apps[id].color} text-sm shrink-0"></i>
+                        <span class="text-xs font-semibold truncate app-title" data-i18n-id="${id}">${title}</span>
+                    </div>
+                    <div class="w-12"></div>
+                </div>
+                <div class="flex-1 relative overflow-hidden bg-os-900/30" id="win-body-${id}"></div>
+                <div class="resize-handle" data-dir="nw"></div><div class="resize-handle" data-dir="n"></div><div class="resize-handle" data-dir="ne"></div>
+                <div class="resize-handle" data-dir="w"></div><div class="resize-handle" data-dir="e"></div>
+                <div class="resize-handle" data-dir="sw"></div><div class="resize-handle" data-dir="s"></div><div class="resize-handle" data-dir="se"></div>
+            `;
+
+            const entry = state.windows[id] = {
+                element: win,
+                minimized: false,
+                maximized: false,
+                z,
+                rect: opts.rect ? { x, y, w: Math.max(300, opts.rect.w), h: Math.max(220, opts.rect.h) } : null
+            };
+
+            layer.appendChild(win);
+            setupDragging(win, id);
+            setupResizing(win, id);
+
+            if (opts.maximized) maximizeWindow(id, true);
+            if (opts.minimized) {
+                win.classList.add('minimized');
+                entry.minimized = true;
+            }
+
+            apps[id].run(id, document.getElementById(`win-body-${id}`));
+            updateDock();
+            return entry;
+        }
 
         function openApp(id) {
             if (state.windows[id]) {
@@ -421,112 +1254,101 @@
                 if (state.windows[id].minimized) toggleMinimize(id);
                 return;
             }
-
             closeLauncher();
-            state.zIndexCounter++;
-
-            const win = document.createElement('div');
-            win.id = `win-${id}`;
-            win.className = `os-window glass-panel text-gray-200 pointer-events-auto border border-white/10`;
-
-            // Layout Math Setup - Force strictly LTR coordinates to fix drag/resize bugs universally
-            const wWidth = 650;
-            const wHeight = 450;
-            const screenW = window.innerWidth;
-            const offset = (Object.keys(state.windows).length * 30);
-
-            let startLeft;
-            if (state.lang === 'ar') {
-                startLeft = Math.max(10, screenW - wWidth - 100 - offset);
-            } else {
-                startLeft = Math.min(screenW - wWidth - 10, 100 + offset);
-            }
-
-            win.style.width = wWidth + 'px';
-            win.style.height = wHeight + 'px';
-            win.style.top = `${80 + offset}px`;
-            win.style.left = `${startLeft}px`;
-            win.style.zIndex = state.zIndexCounter;
-
-            const title = i18n[state.lang][id] || id;
-
-            // Header: Flex justify-between adapts natively. Controls forced LTR.
-            win.innerHTML = `
-                <div class="window-header h-10 bg-os-900/80 border-b border-white/10 flex items-center px-4 justify-between select-none relative group" onmousedown="focusWindow('${id}')" ontouchstart="focusWindow('${id}')">
-                    <div class="flex items-center gap-2 pointer-events-none w-2/3">
-                        <i class="ph ph-${apps[id].icon} ${apps[id].color} text-lg"></i>
-                        <span class="text-sm font-semibold truncate app-title" data-i18n-id="${id}">${title}</span>
-                    </div>
-                    <div class="flex items-center gap-2 z-10" dir="ltr">
-                        <button onclick="closeApp('${id}')" class="w-3.5 h-3.5 rounded-full bg-red-500 hover:bg-red-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-x text-[8px] opacity-0 group-hover/btn:opacity-100 text-red-900"></i></button>
-                        <button onclick="toggleMinimize('${id}')" class="w-3.5 h-3.5 rounded-full bg-yellow-500 hover:bg-yellow-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-minus text-[8px] opacity-0 group-hover/btn:opacity-100 text-yellow-900"></i></button>
-                        <button onclick="toggleMaximize('${id}')" class="w-3.5 h-3.5 rounded-full bg-green-500 hover:bg-green-400 transition cursor-pointer flex items-center justify-center group/btn"><i class="ph ph-arrows-out text-[8px] opacity-0 group-hover/btn:opacity-100 text-green-900"></i></button>
-                    </div>
-                </div>
-                <div class="flex-1 relative overflow-hidden bg-os-900/40" id="win-body-${id}" onmousedown="focusWindow('${id}')" ontouchstart="focusWindow('${id}')">
-                </div>
-                <div class="resize-handle"></div>
-            `;
-
-            document.getElementById('window-layer').appendChild(win);
-            state.windows[id] = { element: win, maximized: false, minimized: false };
-
-            apps[id].run(id, document.getElementById(`win-body-${id}`));
-
-            setupDragging(win, win.querySelector('.window-header'));
-            setupResizing(win);
-            updateDock();
+            createWindow(id);
             focusWindow(id);
+            saveStateDebounced();
+        }
+
+        function focusActiveApp() {
+            if (state.activeId && state.windows[state.activeId]) {
+                if (state.windows[state.activeId].minimized) toggleMinimize(state.activeId);
+                else focusWindow(state.activeId);
+            }
         }
 
         function focusWindow(id) {
-            if (!state.windows[id]) return;
+            const w = state.windows[id];
+            if (!w) return;
             state.zIndexCounter++;
-            state.windows[id].element.style.zIndex = state.zIndexCounter;
+            w.z = state.zIndexCounter;
+            w.element.style.zIndex = state.zIndexCounter;
+            state.activeId = id;
+            document.querySelectorAll('.os-window').forEach((el) => el.classList.remove('focused'));
+            w.element.classList.add('focused');
             document.getElementById('active-app-title').innerText = i18n[state.lang][id] || id;
-            document.getElementById('active-app-title').setAttribute('data-i18n', id);
+            document.getElementById('active-app-title').setAttribute('data-i18n-id', id);
+            saveStateDebounced();
         }
 
         function closeApp(id) {
-            if (state.windows[id]) {
-                state.windows[id].element.style.transform = 'scale(0.9)';
-                state.windows[id].element.style.opacity = '0';
-                setTimeout(() => {
-                    state.windows[id].element.remove();
-                    delete state.windows[id];
-                    updateDock();
-                    if (Object.keys(state.windows).length === 0) {
+            const w = state.windows[id];
+            if (!w) return;
+            w.element.style.transition = 'transform .18s ease, opacity .18s ease';
+            w.element.style.transform = 'scale(.9)';
+            w.element.style.opacity = '0';
+            setTimeout(() => {
+                if (!state.windows[id]) return;
+                const intv = w.element.querySelector('[data-interval]');
+                if (intv && intv.dataset.interval) clearInterval(parseInt(intv.dataset.interval, 10));
+                w.element.remove();
+                delete state.windows[id];
+                if (state.activeId === id) {
+                    state.activeId = null;
+                    const left = Object.keys(state.windows);
+                    if (left.length) {
+                        // Focus the topmost (highest z) remaining window.
+                        const top = left.sort((a, b) => (state.windows[b].z || 0) - (state.windows[a].z || 0))[0];
+                        focusWindow(top);
+                    } else {
                         document.getElementById('active-app-title').innerText = 'Desktopy OS';
-                        document.getElementById('active-app-title').removeAttribute('data-i18n');
+                        document.getElementById('active-app-title').removeAttribute('data-i18n-id');
                     }
-                }, 200);
-            }
+                }
+                updateDock();
+                saveStateDebounced();
+            }, 190);
         }
 
         function toggleMaximize(id) {
             const w = state.windows[id];
-            if (w.maximized) {
-                w.element.style.width = w.prevWidth;
-                w.element.style.height = w.prevHeight;
-                w.element.style.top = w.prevTop;
-                w.element.style.left = w.prevLeft;
-                w.maximized = false;
-            } else {
-                w.prevWidth = w.element.style.width;
-                w.prevHeight = w.element.style.height;
-                w.prevTop = w.element.style.top;
-                w.prevLeft = w.element.style.left;
+            if (!w) return;
+            if (w.maximized) restoreWindow(id);
+            else maximizeWindow(id, false);
+            updateDock();
+        }
 
-                w.element.style.width = '100%';
-                w.element.style.height = '100%';
-                w.element.style.top = '0';
-                w.element.style.left = '0';
-                w.maximized = true;
-            }
+        function maximizeWindow(id, silent) {
+            const w = state.windows[id];
+            if (!w || w.maximized) return;
+            const L = layerRect();
+            w.prevRect = w.rect || currentRect(w.element);
+            w.element.style.left = '0px';
+            w.element.style.top = '0px';
+            w.element.style.width = L.w + 'px';
+            w.element.style.height = L.h + 'px';
+            w.element.classList.add('maximized');
+            w.maximized = true;
+            if (!silent) { focusWindow(id); saveStateDebounced(); }
+        }
+
+        function restoreWindow(id) {
+            const w = state.windows[id];
+            if (!w) return;
+            const r = w.prevRect || w.rect || currentRect(w.element);
+            w.rect = { x: r.x, y: r.y, w: r.w, h: r.h };
+            w.element.style.left = r.x + 'px';
+            w.element.style.top = r.y + 'px';
+            w.element.style.width = r.w + 'px';
+            w.element.style.height = r.h + 'px';
+            w.element.classList.remove('maximized');
+            w.maximized = false;
+            saveStateDebounced();
         }
 
         function toggleMinimize(id) {
             const w = state.windows[id];
+            if (!w) return;
             if (w.minimized) {
                 w.element.classList.remove('minimized');
                 w.minimized = false;
@@ -536,101 +1358,176 @@
                 w.minimized = true;
             }
             updateDock();
+            saveStateDebounced();
         }
 
-        function setupDragging(win, header) {
-            let isDragging = false, startX, startY, startLeft, startTop;
+        /* ---------- dragging with edge snap ---------- */
+        function setupDragging(win, id) {
+            const header = win.querySelector('.window-header');
+            let sx = 0, sy = 0, ox = 0, oy = 0, dragging = false;
 
-            const startDrag = (e) => {
-                if (e.target.closest('button') || state.windows[win.id.replace('win-', '')].maximized) return;
-                isDragging = true;
-                const touch = e.type.includes('touch') ? e.touches[0] : e;
-                startX = touch.clientX;
-                startY = touch.clientY;
-                startTop = parseInt(win.style.top || win.offsetTop, 10);
-                startLeft = parseInt(win.style.left || win.offsetLeft, 10);
-                document.body.style.cursor = 'grabbing';
+            const onDown = (e) => {
+                if (e.target.closest('button')) return;
+                if (state.windows[id].maximized) return;
+                dragging = true;
+                sx = e.clientX; sy = e.clientY;
+                ox = parseFloat(win.style.left) || win.offsetLeft;
+                oy = parseFloat(win.style.top) || win.offsetTop;
+                win.classList.add('dragging');
+                header.setPointerCapture(e.pointerId);
             };
-
-            const drag = (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const touch = e.type.includes('touch') ? e.touches[0] : e;
-                const dx = touch.clientX - startX;
-                const dy = touch.clientY - startY;
-                win.style.left = `${startLeft + dx}px`;
-                win.style.top = Math.max(32, startTop + dy) + 'px';
+            const onMove = (e) => {
+                if (!dragging) return;
+                const L = layerRect();
+                let x = ox + (e.clientX - sx);
+                let y = oy + (e.clientY - sy);
+                x = Math.max(-win.offsetWidth + 90, Math.min(x, L.w - 90));
+                y = Math.max(0, Math.min(y, L.h - 46));
+                win.style.left = x + 'px';
+                win.style.top = y + 'px';
             };
-
-            const endDrag = () => {
-                isDragging = false;
-                document.body.style.cursor = 'default';
+            const onUp = (e) => {
+                if (!dragging) return;
+                dragging = false;
+                win.classList.remove('dragging');
+                try { header.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+                snapWindow(win, id);
+                const w = state.windows[id];
+                if (w && !w.maximized) w.rect = currentRect(win);
+                saveStateDebounced();
             };
-
-            header.addEventListener('mousedown', startDrag);
-            header.addEventListener('touchstart', startDrag, { passive: false });
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
+            header.addEventListener('pointerdown', onDown);
+            header.addEventListener('pointermove', onMove);
+            header.addEventListener('pointerup', onUp);
+            header.addEventListener('pointercancel', onUp);
+            header.addEventListener('dblclick', (e) => {
+                if (!e.target.closest('button')) toggleMaximize(id);
+            });
         }
 
-        function setupResizing(win) {
-            const handle = win.querySelector('.resize-handle');
-            let isResizing = false, startX, startY, startW, startH, isRTL;
+        function snapWindow(win, id) {
+            const w = state.windows[id];
+            if (!w || w.maximized) return;
+            const L = layerRect();
+            const r = currentRect(win);
+            const snapZone = 8;
+            if (r.y <= snapZone) {
+                w.prevRect = w.rect || r;
+                maximizeWindow(id, true);
+                w.element.classList.add('focused');
+            } else if (r.x <= snapZone && r.x > -4) {
+                w.prevRect = w.rect || r;
+                win.style.left = '0px';
+                win.style.top = '0px';
+                win.style.width = Math.floor(L.w / 2) + 'px';
+                win.style.height = L.h + 'px';
+                w.rect = currentRect(win);
+            } else if (r.x + r.w >= L.w - snapZone) {
+                w.prevRect = w.rect || r;
+                win.style.left = Math.floor(L.w / 2) + 'px';
+                win.style.top = '0px';
+                win.style.width = Math.floor(L.w / 2) + 'px';
+                win.style.height = L.h + 'px';
+                w.rect = currentRect(win);
+            }
+        }
 
-            const startResize = (e) => {
-                isResizing = true;
-                const touch = e.type.includes('touch') ? e.touches[0] : e;
-                startX = touch.clientX;
-                startY = touch.clientY;
-                startW = win.offsetWidth;
-                startH = win.offsetHeight;
-                isRTL = state.lang === 'ar';
+        /* ---------- resizing (all 8 directions, physical coords) ---------- */
+        function setupResizing(win, id) {
+            const handles = win.querySelectorAll('.resize-handle');
+            let resizing = false, dir = '', sx = 0, sy = 0, start = null;
+            const MIN_W = 320, MIN_H = 220;
+
+            const onDown = (e) => {
+                if (state.windows[id].maximized) return;
+                resizing = true;
+                dir = e.target.dataset.dir;
+                sx = e.clientX; sy = e.clientY;
+                start = currentRect(win);
+                win.classList.add('dragging');
+                e.target.setPointerCapture(e.pointerId);
                 e.stopPropagation();
             };
-
-            const resize = (e) => {
-                if (!isResizing) return;
-                const touch = e.type.includes('touch') ? e.touches[0] : e;
-
-                // If RTL, handle is on the left edge. Moving left (negative dx) increases width.
-                // If LTR, handle is on the right edge. Moving right (positive dx) increases width.
-                let dx = touch.clientX - startX;
-                if (isRTL) dx = -dx;
-
-                const dy = touch.clientY - startY;
-
-                win.style.width = Math.max(300, startW + dx) + 'px';
-                win.style.height = Math.max(200, startH + dy) + 'px';
-
-                // If RTL, dragging the left handle changes width but keeping 'left' static makes window grow right.
-                // To make it grow left visually, we must adjust 'left'.
-                if (isRTL) {
-                    win.style.left = (parseInt(win.style.left || 0) - dx) + 'px';
-                }
+            const onMove = (e) => {
+                if (!resizing) return;
+                const dx = e.clientX - sx;
+                const dy = e.clientY - sy;
+                let { x, y, w, h } = start;
+                if (dir.includes('e')) w = start.w + dx;
+                if (dir.includes('s')) h = start.h + dy;
+                if (dir.includes('w')) { w = start.w - dx; x = start.x + dx; }
+                if (dir.includes('n')) { h = start.h - dy; y = start.y + dy; }
+                w = Math.max(MIN_W, w);
+                h = Math.max(MIN_H, h);
+                win.style.left = x + 'px';
+                win.style.top = y + 'px';
+                win.style.width = w + 'px';
+                win.style.height = h + 'px';
             };
-
-            const endResize = () => isResizing = false;
-
-            handle.addEventListener('mousedown', startResize);
-            handle.addEventListener('touchstart', startResize, { passive: false });
-            document.addEventListener('mousemove', resize);
-            document.addEventListener('touchmove', resize, { passive: false });
-            document.addEventListener('mouseup', endResize);
-            document.addEventListener('touchend', endResize);
+            const onUp = (e) => {
+                if (!resizing) return;
+                resizing = false;
+                win.classList.remove('dragging');
+                try { e.target.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+                state.windows[id].rect = currentRect(win);
+                saveStateDebounced();
+            };
+            handles.forEach((h) => {
+                h.addEventListener('pointerdown', onDown);
+                h.addEventListener('pointermove', onMove);
+                h.addEventListener('pointerup', onUp);
+                h.addEventListener('pointercancel', onUp);
+            });
         }
 
-        // 1. Terminal (Strictly LTR)
+        /* ---------- restore persisted windows ---------- */
+        function restoreWindows(windows, zIndex) {
+            if (!windows || typeof windows !== 'object') return;
+            state.zIndexCounter = Math.max(state.zIndexCounter, zIndex || 0);
+            Object.keys(windows)
+                .filter((id) => apps[id])
+                .sort((a, b) => (windows[a].z || 0) - (windows[b].z || 0))
+                .forEach((id) => {
+                    const r = windows[id];
+                    createWindow(id, {
+                        rect: { x: r.x, y: r.y, w: r.w, h: r.h },
+                        z: r.z,
+                        maximized: !!r.maximized,
+                        minimized: !!r.minimized
+                    });
+                });
+            const open = Object.keys(state.windows);
+            if (open.length) {
+                const top = open.reduce((a, b) => (state.windows[a].z > state.windows[b].z ? a : b));
+                focusWindow(top);
+            }
+        }
+
+        /* ============================================================
+         * App builders
+         * ============================================================ */
+
+        /* ---------- terminal (filesystem-aware) ---------- */
+        function resolvePath(cwd, arg) {
+            if (!arg) return cwd;
+            const parts = [];
+            const segs = (arg.startsWith('/') ? arg : cwd + '/' + arg).split('/').filter(Boolean);
+            for (const s of segs) {
+                if (s === '.') continue;
+                if (s === '..') { if (parts.length) parts.pop(); }
+                else parts.push(s);
+            }
+            return parts.join('/') || 'home';
+        }
+
         function buildTerminal(id, container) {
             container.innerHTML = `
-                <div class="h-full bg-os-900/90 font-mono text-[13px] p-3 flex flex-col overflow-hidden text-green-400 text-left" dir="ltr">
-                    <div id="term-out-${id}" class="flex-1 overflow-y-auto whitespace-pre-wrap leading-relaxed pb-2">
-Desktopy OS v1.0.0 (Web-Kernel)
+                <div class="h-full bg-os-900/90 font-mono text-[13px] p-3 flex flex-col overflow-hidden text-green-400" dir="ltr">
+                    <div id="term-out-${id}" class="flex-1 overflow-y-auto whitespace-pre-wrap leading-relaxed pb-2">Desktopy OS v1.0.0 (Web-Kernel)
 Type 'help' for available commands.
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-blue-400 font-bold">root@desktopy:~$</span>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span id="term-prompt-${id}" class="text-blue-400 font-bold shrink-0">root@desktopy:~/home$</span>
                         <input type="text" id="term-in-${id}" class="flex-1 bg-transparent border-none outline-none text-green-400" autocomplete="off" spellcheck="false" autofocus>
                     </div>
                 </div>
@@ -638,51 +1535,187 @@ Type 'help' for available commands.
 
             const inp = document.getElementById(`term-in-${id}`);
             const out = document.getElementById(`term-out-${id}`);
+            container.dataset.cwd = 'home';
 
-            inp.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const cmd = inp.value.trim();
-                    inp.value = '';
-                    let response = '';
+            const prompt = () => `root@desktopy:~/home${container.dataset.cwd === 'home' ? '' : '/' + container.dataset.cwd}$`;
+            const print = (text, cls = 'text-green-400') => {
+                out.innerHTML += `<span class="${cls}">${esc(text)}</span>\n`;
+                out.scrollTop = out.scrollHeight;
+            };
+            const updatePrompt = () => {
+                const p = document.getElementById(`term-prompt-${id}`);
+                if (p) p.innerText = prompt();
+            };
 
-                    if (cmd) {
-                        out.innerHTML += `\n<span class="text-blue-400 font-bold">root@desktopy:~$</span> ${cmd}\n`;
-                        switch (cmd.toLowerCase()) {
-                            case 'help': response = 'Commands: help, clear, date, echo, neofetch, whoami'; break;
-                            case 'clear': out.innerHTML = ''; return;
-                            case 'date': response = new Date().toString(); break;
-                            case 'whoami': response = 'root (Web Administrator)'; break;
-                            case 'neofetch': response = `
-       .---.       OS: Desktopy OS Web
-      /     \\      Kernel: WebKit DOM Engine
-     | () () |     Shell: Bash-simulated (JS)
-      \\  _  /      Theme: Custom Dark Glass
-       \`---\`       Font: Fira Code
-                            `; break;
-                            default:
-                                if (cmd.startsWith('echo ')) response = cmd.substring(5);
-                                else response = `bash: ${cmd}: command not found`;
-                        }
-                        if (response) out.innerHTML += response;
+            const HELP = [
+                'help, clear, date, echo, whoami, neofetch',
+                'pwd, ls [path], cd [path], tree',
+                'cat <file>, touch <file>, mkdir <dir>',
+                'rm <path>, write <file> <text...>',
+                'theme [dark|light], lang [ar|en]',
+                'state, disk, sysinfo, history, clear'
+            ];
+
+            async function runCommand(cmd) {
+                const trimmed = cmd.trim();
+                if (!trimmed) return;
+                const parts = trimmed.split(/\s+/);
+                const name = parts[0].toLowerCase();
+                const args = parts.slice(1);
+                const cwd = container.dataset.cwd || 'home';
+
+                state.history = (state.history || []).concat(trimmed).slice(-30);
+
+                switch (name) {
+                    case 'help':
+                        print(HELP.join('\n'), 'text-gray-400');
+                        break;
+                    case 'clear':
+                        out.innerHTML = '';
+                        return;
+                    case 'date':
+                        print(new Date().toString());
+                        break;
+                    case 'echo':
+                        print(args.join(' '));
+                        break;
+                    case 'whoami':
+                        print('root (Web Administrator)');
+                        break;
+                    case 'neofetch':
+                        print(`       .---.       OS: Desktopy OS Web\n      /     \\\\      Kernel: WebKit DOM Engine\n     | () () |     Shell: Bash-simulated (JS + PHP)\n      \\\\  _  /      Theme: ${state.theme} / ${state.accent}\n       \`---\`       Font: Fira Code`, 'text-cyan-300');
+                        break;
+                    case 'pwd':
+                        print('/home' + (cwd === 'home' ? '' : '/' + cwd));
+                        break;
+                    case 'ls': {
+                        const target = resolvePath(cwd, args[0]);
+                        const r = await Backend.ls(target);
+                        if (!r.ok) { print(r.error, 'text-red-400'); break; }
+                        if (!r.entries.length) { print('(empty)', 'text-gray-500'); break; }
+                        r.entries.forEach((e) => {
+                            const size = e.type === 'dir' ? 'DIR' : String(e.size).padStart(6);
+                            print(`${e.type === 'dir' ? 'drwxr-xr-x' : '-rw-r--r--'}  ${size}  ${e.name}${e.type === 'dir' ? '/' : ''}`, e.type === 'dir' ? 'text-blue-300' : 'text-green-400');
+                        });
+                        break;
                     }
-                    out.scrollTop = out.scrollHeight;
+                    case 'tree': {
+                        const root = resolvePath(cwd, args[0]);
+                        const lines = ['']; let count = 0;
+                        async function walk(dir, prefix) {
+                            const r = await Backend.ls(dir);
+                            if (!r.ok) return;
+                            const entries = r.entries;
+                            for (let i = 0; i < entries.length; i++) {
+                                const e = entries[i];
+                                const last = i === entries.length - 1;
+                                lines.push(prefix + (last ? '└── ' : '├── ') + e.name + (e.type === 'dir' ? '/' : ''));
+                                count++;
+                                if (count < 60 && e.type === 'dir') await walk(e.path, prefix + (last ? '    ' : '│   '));
+                            }
+                        }
+                        await walk(root, '');
+                        print(lines.join('\n') || '(empty)', 'text-gray-400');
+                        break;
+                    }
+                    case 'cd': {
+                        const target = resolvePath(cwd, args[0] || 'home');
+                        const r = await Backend.ls(target);
+                        if (!r.ok) { print(`cd: no such directory: ${args[0] || ''}`, 'text-red-400'); break; }
+                        container.dataset.cwd = target;
+                        updatePrompt();
+                        break;
+                    }
+                    case 'cat': {
+                        if (!args[0]) { print('usage: cat <file>', 'text-yellow-400'); break; }
+                        const r = await Backend.read(resolvePath(cwd, args[0]));
+                        if (!r.ok) { print(r.error, 'text-red-400'); break; }
+                        print(r.content);
+                        break;
+                    }
+                    case 'touch': {
+                        const r = await Backend.write(resolvePath(cwd, args[0] || 'untitled'), '');
+                        print(r.ok ? `created ${r.path}` : r.error, r.ok ? 'text-green-400' : 'text-red-400');
+                        break;
+                    }
+                    case 'mkdir': {
+                        if (!args[0]) { print('usage: mkdir <dir>', 'text-yellow-400'); break; }
+                        const r = await Backend.mkdir(resolvePath(cwd, args[0]));
+                        print(r.ok ? `created directory ${r.path}` : r.error, r.ok ? 'text-green-400' : 'text-red-400');
+                        break;
+                    }
+                    case 'rm': {
+                        if (!args[0]) { print('usage: rm <path>', 'text-yellow-400'); break; }
+                        const r = await Backend.rm(resolvePath(cwd, args[0]));
+                        print(r.ok ? 'removed' : r.error, r.ok ? 'text-green-400' : 'text-red-400');
+                        break;
+                    }
+                    case 'write': {
+                        if (args.length < 2) { print('usage: write <file> <text...>', 'text-yellow-400'); break; }
+                        const r = await Backend.write(resolvePath(cwd, args[0]), args.slice(1).join(' '));
+                        print(r.ok ? `written ${r.path}` : r.error, r.ok ? 'text-green-400' : 'text-red-400');
+                        break;
+                    }
+                    case 'theme':
+                        if (args[0] === 'dark' || args[0] === 'light') toggleTheme(args[0]);
+                        else print('usage: theme [dark|light]', 'text-yellow-400');
+                        break;
+                    case 'lang':
+                        if (args[0] === 'ar' || args[0] === 'en') toggleLang(args[0]);
+                        else print('usage: lang [ar|en]', 'text-yellow-400');
+                        break;
+                    case 'state': {
+                        const wins = Object.keys(state.windows).length;
+                        print(`backend: ${state.backend ? 'PHP ' + (Backend.phpVersion || '') : 'localStorage'}\ntheme: ${state.theme} | lang: ${state.lang} | accent: ${state.accent}\nwindows: ${wins} | notes: ${state.notes.length} chars | history: ${state.history.length} cmds`, 'text-gray-300');
+                        break;
+                    }
+                    case 'disk': {
+                        const r = await Backend.disk();
+                        if (!r.ok) { print(r.error, 'text-red-400'); break; }
+                        print(`storage: ${(r.total / 1024).toFixed(1)} KB across ${r.files} files`, 'text-cyan-300');
+                        break;
+                    }
+                    case 'sysinfo': {
+                        print(`Desktopy Web Kernel 1.0.0\nPHP backend: ${state.backend ? 'online' : 'offline'}`, 'text-gray-300');
+                        break;
+                    }
+                    case 'history':
+                        print((state.history || []).map((h, i) => `${i + 1}  ${h}`).join('\n') || '(empty)', 'text-gray-400');
+                        break;
+                    default:
+                        print(`bash: ${name}: command not found`, 'text-red-400');
                 }
+                saveStateDebounced();
+            }
+
+            // Serialize commands so output order is deterministic.
+            let cmdChain = Promise.resolve();
+            inp.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                const cmd = inp.value;
+                inp.value = '';
+                out.innerHTML += `<span class="text-blue-400 font-bold">${prompt()}</span> ${cmd.replace(/</g, '&lt;')}\n`;
+                cmdChain = cmdChain
+                    .then(() => runCommand(cmd))
+                    .catch((err) => print('error: ' + err, 'text-red-400'))
+                    .then(() => { out.scrollTop = out.scrollHeight; });
             });
-            container.addEventListener('mousedown', () => inp.focus());
+            container.addEventListener('pointerdown', () => inp.focus());
+            updatePrompt();
         }
 
-        // 2. Calculator (Strictly LTR logic)
+        /* ---------- calculator ---------- */
         function buildCalculator(id, container) {
             container.innerHTML = `
                 <div class="h-full bg-os-800 flex flex-col p-4" dir="ltr">
                     <div id="calc-display-${id}" class="h-20 bg-os-900 border border-white/5 rounded-xl mb-4 text-right px-4 flex items-center justify-end text-3xl font-mono text-white overflow-hidden shadow-inner">0</div>
                     <div class="grid grid-cols-4 gap-2 flex-1">
-                        ${['C', '/', '*', '-', '7', '8', '9', '+', '4', '5', '6', '=', '1', '2', '3', '0', '.', 'Del'].map(btn => {
-                let classes = "bg-os-700 hover:bg-os-600 rounded-xl text-lg font-bold transition flex items-center justify-center text-white cursor-pointer active:scale-95";
-                if (btn === '=') classes += " row-span-2 bg-indigo-600 hover:bg-indigo-500";
-                if (btn === '0') classes += " col-span-2";
-                if (['/', '*', '-', '+', 'C', 'Del'].includes(btn)) classes += " text-indigo-300";
-                return `<button class="${classes}" onclick="calcPress('${id}', '${btn}')">${btn}</button>`;
+                        ${['C', '/', '*', '-', '7', '8', '9', '+', '4', '5', '6', '=', '1', '2', '3', '0', '.', 'Del'].map((btn) => {
+                let cls = "bg-os-700 hover:bg-os-600 rounded-xl text-lg font-bold transition flex items-center justify-center text-white cursor-pointer active:scale-95";
+                if (btn === '=') cls += " row-span-2 bg-indigo-600 hover:bg-indigo-500";
+                if (btn === '0') cls += " col-span-2";
+                if (['/', '*', '-', '+', 'C', 'Del'].includes(btn)) cls += " text-indigo-300";
+                return `<button class="${cls}" onclick="calcPress('${id}', '${btn}')">${btn}</button>`;
             }).join('')}
                     </div>
                 </div>
@@ -692,144 +1725,180 @@ Type 'help' for available commands.
 
         function calcPress(id, key) {
             const container = document.getElementById(`win-body-${id}`);
+            if (!container) return;
             const display = document.getElementById(`calc-display-${id}`);
-            let val = container.dataset.val;
-
+            let val = container.dataset.val || '';
             if (key === 'C') val = '';
             else if (key === 'Del') val = val.slice(0, -1);
             else if (key === '=') {
-                try { val = new Function('return ' + val)().toString(); }
-                catch (e) { val = 'Error'; }
-            }
-            else val += key;
-
+                try { val = new Function('return ' + val)().toString(); } catch (e) { val = 'Error'; }
+            } else val += key;
             container.dataset.val = val;
             display.innerText = val || '0';
         }
 
-        // 3. Paint Canvas
+        /* ---------- paint ---------- */
         function buildPaint(id, container) {
             container.innerHTML = `
                 <div class="h-full flex flex-col bg-os-800">
-                    <div class="h-12 bg-os-900/50 border-b border-white/5 flex items-center px-4 gap-3">
+                    <div class="h-12 bg-os-900/50 border-b border-white/5 flex items-center px-3 gap-3 shrink-0">
                         <input type="color" id="paint-color-${id}" value="#6366f1" class="w-8 h-8 rounded cursor-pointer border-none bg-transparent">
-                        <input type="range" id="paint-size-${id}" min="1" max="20" value="3" class="w-24 cursor-pointer">
-                        <button onclick="document.getElementById('canvas-${id}').getContext('2d').clearRect(0,0,2000,2000)" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-xs ms-auto transition cursor-pointer">Clear</button>
+                        <input type="range" id="paint-size-${id}" min="1" max="24" value="4" class="w-24 cursor-pointer">
+                        <button onclick="paintClear('${id}')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-xs transition cursor-pointer">Clear</button>
+                        <div class="flex-1"></div>
+                        <button onclick="paintSave('${id}')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-medium transition cursor-pointer">Save PNG</button>
                     </div>
                     <div class="flex-1 bg-white relative cursor-crosshair overflow-hidden">
-                        <canvas id="canvas-${id}" width="2000" height="2000" class="absolute top-0 start-0"></canvas>
+                        <canvas id="canvas-${id}" width="1600" height="1200" class="absolute top-0 start-0"></canvas>
                     </div>
                 </div>
             `;
-
             setTimeout(() => {
                 const canvas = document.getElementById(`canvas-${id}`);
+                if (!canvas) return;
                 const ctx = canvas.getContext('2d');
                 let painting = false;
-
                 function draw(e) {
                     if (!painting) return;
                     const rect = canvas.getBoundingClientRect();
-                    const touch = e.type.includes('touch') ? e.touches[0] : e;
-                    const x = touch.clientX - rect.left;
-                    const y = touch.clientY - rect.top;
-
-                    ctx.lineWidth = document.getElementById(`paint-size-${id}`).value;
+                    const p = e.type.includes('touch') ? e.touches[0] : e;
+                    const x = (p.clientX - rect.left) * (canvas.width / rect.width);
+                    const y = (p.clientY - rect.top) * (canvas.height / rect.height);
+                    ctx.lineWidth = document.getElementById(`paint-size-${id}`).value * (canvas.width / rect.width);
                     ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
                     ctx.strokeStyle = document.getElementById(`paint-color-${id}`).value;
                     ctx.lineTo(x, y);
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                 }
-
                 const start = (e) => { painting = true; draw(e); };
                 const end = () => { painting = false; ctx.beginPath(); };
-
-                canvas.addEventListener('mousedown', start);
-                canvas.addEventListener('touchstart', start, { passive: false });
-                canvas.addEventListener('mouseup', end);
-                canvas.addEventListener('touchend', end);
-                canvas.addEventListener('mousemove', draw);
-                canvas.addEventListener('touchmove', draw, { passive: false });
-                canvas.addEventListener('mouseleave', end);
-            }, 100);
+                canvas.addEventListener('pointerdown', start);
+                canvas.addEventListener('pointermove', draw);
+                canvas.addEventListener('pointerup', end);
+                canvas.addEventListener('pointerleave', end);
+            }, 120);
         }
 
-        // 4. Text Editor (Auto-directional Textarea)
+        function paintClear(id) {
+            const canvas = document.getElementById(`canvas-${id}`);
+            if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function paintSave(id) {
+            const canvas = document.getElementById(`canvas-${id}`);
+            if (!canvas) return;
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `desktopy-paint-${Date.now()}.png`;
+            a.click();
+            toast('PNG exported', 'ok');
+        }
+
+        /* ---------- notes / text editor (persists via backend) ---------- */
         function buildEditor(id, container) {
-            const saved = localStorage.getItem('desktopy_notes') || '';
             container.innerHTML = `
                 <div class="h-full flex flex-col bg-os-900">
-                    <div class="h-10 border-b border-white/5 flex items-center px-4 gap-2 text-xs text-gray-400">
+                    <div class="h-10 border-b border-white/5 flex items-center px-4 gap-2 text-xs text-gray-400 shrink-0">
                         <span class="hover:text-white cursor-pointer">File</span>
                         <span class="hover:text-white cursor-pointer">Edit</span>
                         <div class="flex-1"></div>
                         <span id="editor-status-${id}" class="text-[10px] text-green-500 opacity-0 transition-opacity">Saved</span>
                     </div>
-                    <textarea id="editor-text-${id}" dir="auto" class="flex-1 bg-transparent p-4 outline-none resize-none text-sm text-gray-200" placeholder="Type your text here...">${saved}</textarea>
+                    <textarea id="editor-text-${id}" dir="auto" class="flex-1 bg-transparent p-4 outline-none resize-none text-sm text-gray-200" placeholder="Type your notes here..."></textarea>
                 </div>
             `;
-
             const ta = document.getElementById(`editor-text-${id}`);
             const status = document.getElementById(`editor-status-${id}`);
+            ta.value = state.notes || '';
             let timeout;
-
             ta.addEventListener('input', () => {
+                state.notes = ta.value;
                 clearTimeout(timeout);
                 status.style.opacity = '1';
-                status.innerText = 'Saving...';
-                status.className = "text-[10px] text-yellow-500 transition-opacity";
-
+                status.innerText = T('saving');
+                status.className = 'text-[10px] text-yellow-500 transition-opacity';
                 timeout = setTimeout(() => {
-                    localStorage.setItem('desktopy_notes', ta.value);
-                    status.innerText = 'Saved';
-                    status.className = "text-[10px] text-green-500 transition-opacity";
-                    setTimeout(() => status.style.opacity = '0', 2000);
-                }, 1000);
+                    saveStateDebounced();
+                    status.innerText = T('saved');
+                    status.className = 'text-[10px] text-green-500 transition-opacity';
+                    setTimeout(() => { status.style.opacity = '0'; }, 2000);
+                }, 900);
             });
         }
 
-        // 5. Settings (Responsive UI)
+        /* ---------- settings ---------- */
+        const ACCENTS = [
+            { id: 'indigo', css: '#6366f1' }, { id: 'emerald', css: '#10b981' }, { id: 'rose', css: '#f43f5e' },
+            { id: 'amber', css: '#f59e0b' }, { id: 'cyan', css: '#06b6d4' }, { id: 'violet', css: '#8b5cf6' }
+        ];
+
         function buildSettings(id, container) {
             container.innerHTML = `
-                <div class="h-full bg-os-800 flex p-0">
-                    <div class="w-1/3 bg-os-900 border-e border-white/5 p-4 flex flex-col gap-2">
-                        <button class="text-start px-3 py-2 bg-white/10 rounded-lg font-medium text-sm">System</button>
-                        <button class="text-start px-3 py-2 hover:bg-white/5 rounded-lg text-sm text-gray-400 transition">Appearance</button>
+                <div class="h-full bg-os-800 flex">
+                    <div class="w-1/3 bg-os-900 border-e border-white/5 p-4 flex flex-col gap-2 shrink-0">
+                        <div class="px-3 py-2 bg-white/10 rounded-lg font-medium text-sm flex items-center gap-2"><i class="ph ph-monitor"></i> ${T('appearance')}</div>
+                        <div class="px-3 py-2 hover:bg-white/5 rounded-lg text-sm text-gray-400 transition flex items-center gap-2"><i class="ph ph-cpu"></i> ${T('system')}</div>
+                        <div class="px-3 py-2 hover:bg-white/5 rounded-lg text-sm text-gray-400 transition flex items-center gap-2"><i class="ph ph-info"></i> ${T('about')}</div>
                     </div>
-                    <div class="w-2/3 p-6 flex flex-col gap-6 overflow-y-auto">
-                        <h3 class="text-2xl font-bold">System Settings</h3>
-                        
-                        <div class="bg-os-900 border border-white/5 rounded-xl p-4 flex justify-between items-center shadow-sm">
-                            <div>
-                                <div class="font-bold">Language / اللغة</div>
-                                <div class="text-xs text-gray-400">Switch system layout direction</div>
+                    <div class="flex-1 p-6 flex flex-col gap-6 overflow-y-auto" id="settings-body-${id}">
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">${T('appearance')}</h3>
+                            <div class="bg-os-900 border border-white/5 rounded-xl p-4 shadow-sm mb-4">
+                                <div class="font-bold text-sm mb-1">${T('theme_mode')}</div>
+                                <div class="text-xs text-gray-400 mb-3">${T('dark')} / ${T('light')}</div>
+                                <div class="flex gap-2">
+                                    <button onclick="toggleTheme('dark')" class="btn-ghost ${state.theme === 'dark' ? '!bg-indigo-600 !text-white' : ''}">🌙 ${T('dark')}</button>
+                                    <button onclick="toggleTheme('light')" class="btn-ghost ${state.theme === 'light' ? '!bg-indigo-600 !text-white' : ''}">☀️ ${T('light')}</button>
+                                </div>
                             </div>
-                            <button onclick="toggleLang()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition cursor-pointer">Switch</button>
-                        </div>
-                        
-                        <div class="bg-os-900 border border-white/5 rounded-xl p-4 flex justify-between items-center shadow-sm">
-                            <div>
-                                <div class="font-bold">Theme Mode</div>
-                                <div class="text-xs text-gray-400">Toggle dark and light style</div>
+                            <div class="bg-os-900 border border-white/5 rounded-xl p-4 shadow-sm">
+                                <div class="font-bold text-sm mb-1">${T('accent_color')}</div>
+                                <div class="text-xs text-gray-400 mb-3">Pick a system accent</div>
+                                <div class="flex gap-2.5">
+                                    ${ACCENTS.map((a) => `<button onclick="setAccent('${a.id}')" title="${a.id}" class="w-8 h-8 rounded-full transition hover:scale-110 cursor-pointer ${state.accent === a.id ? 'ring-2 ring-white ring-offset-2 ring-offset-os-900' : ''}" style="background:${a.css}"></button>`).join('')}
+                                </div>
                             </div>
-                            <button onclick="toggleTheme()" class="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition cursor-pointer">Toggle</button>
                         </div>
-                        
-                        <div class="mt-auto text-center text-xs text-gray-500 pt-8" dir="ltr">
-                            Desktopy Web Kernel 2.0.0
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">${T('language')}</h3>
+                            <div class="bg-os-900 border border-white/5 rounded-xl p-4 shadow-sm flex gap-3">
+                                <button onclick="toggleLang('ar')" class="btn-ghost flex-1 ${state.lang === 'ar' ? '!bg-indigo-600 !text-white' : ''}">العربية</button>
+                                <button onclick="toggleLang('en')" class="btn-ghost flex-1 ${state.lang === 'en' ? '!bg-indigo-600 !text-white' : ''}">English</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">${T('system')}</h3>
+                            <div class="bg-os-900 border border-white/5 rounded-xl p-4 shadow-sm space-y-3 text-xs">
+                                <div class="flex justify-between"><span class="text-gray-400">${T('backend_online').split(' ')[0]} backend</span><span id="set-backend-${id}" class="font-mono">…</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">${T('storage')}</span><span id="set-disk-${id}" class="font-mono">…</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">${T('version')}</span><span class="font-mono" dir="ltr">1.0.0</span></div>
+                                <button onclick="resetDesktopConfirm()" class="btn-ghost w-full !text-red-400 mt-2"><i class="ph ph-arrow-counter-clockwise"></i> ${T('reset_desktop')}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
+            const update = async () => {
+                document.getElementById(`set-backend-${id}`).innerText = state.backend
+                    ? (T('online') + (Backend.phpVersion ? ` (PHP ${Backend.phpVersion})` : ''))
+                    : T('offline');
+                const r = await Backend.disk();
+                if (r.ok) {
+                    const kb = (r.total / 1024);
+                    document.getElementById(`set-disk-${id}`).innerText = `${kb >= 1024 ? (kb / 1024).toFixed(2) + ' MB' : kb.toFixed(1) + ' KB'} · ${r.files} files`;
+                }
+            };
+            update();
         }
 
-        // 6. System Monitor (Enforced LTR for technical specs)
+        /* ---------- system monitor ---------- */
         function buildMonitor(id, container) {
             container.innerHTML = `
-                <div class="h-full bg-os-900 p-4 flex flex-col gap-4 text-sm font-mono text-left" dir="ltr">
-                    <div class="grid grid-cols-2 gap-4">
+                <div class="h-full bg-os-900 p-4 flex flex-col gap-4 text-sm font-mono overflow-hidden" dir="ltr">
+                    <div class="grid grid-cols-2 gap-4 shrink-0">
                         <div class="bg-os-800 p-4 rounded-xl border border-white/5">
                             <div class="text-gray-400 mb-2">CPU Usage</div>
                             <div class="text-2xl font-bold text-green-400" id="mon-cpu-${id}">12%</div>
@@ -837,38 +1906,53 @@ Type 'help' for available commands.
                         </div>
                         <div class="bg-os-800 p-4 rounded-xl border border-white/5">
                             <div class="text-gray-400 mb-2">Memory (RAM)</div>
-                            <div class="text-2xl font-bold text-indigo-400">3.2 GB <span class="text-sm text-gray-500">/ 16 GB</span></div>
-                            <div class="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div class="h-full bg-indigo-500" style="width: 20%"></div></div>
+                            <div class="text-2xl font-bold text-indigo-400" id="mon-ram-${id}">3.2 GB <span class="text-sm text-gray-500">/ 16 GB</span></div>
+                            <div class="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div class="h-full bg-indigo-500 transition-all duration-1000" id="mon-ram-bar-${id}" style="width: 20%"></div></div>
                         </div>
                     </div>
-                    <div class="flex-1 bg-os-800 rounded-xl border border-white/5 p-4 overflow-hidden flex flex-col">
-                        <div class="text-gray-400 mb-2 border-b border-white/5 pb-2 flex justify-between"><span>Process Name</span><span>PID</span><span>CPU%</span></div>
-                        <div class="flex-1 overflow-y-auto space-y-2 text-gray-300">
-                            <div class="flex justify-between"><span>desktopy-wm</span><span>1</span><span class="text-green-400">4.2%</span></div>
-                            <div class="flex justify-between"><span>webkit-renderer</span><span>42</span><span class="text-green-400">1.8%</span></div>
-                            <div class="flex justify-between"><span>idle</span><span>0</span><span class="text-gray-500">93.5%</span></div>
-                        </div>
+                    <div class="flex-1 bg-os-800 rounded-xl border border-white/5 p-4 overflow-hidden flex flex-col min-h-0">
+                        <div class="text-gray-400 mb-2 border-b border-white/5 pb-2 flex justify-between text-xs"><span>Process</span><span>PID</span><span>CPU%</span><span>MEM</span></div>
+                        <div class="flex-1 overflow-y-auto space-y-1.5 text-gray-300" id="mon-procs-${id}"></div>
                     </div>
                 </div>
             `;
-
+            const procs = [
+                ['desktopy-wm', 1], ['php-backend', 42], ['webkit-renderer', 7], ['tailwind-cdn', 13], ['idle', 0]
+            ];
+            const renderProcs = (cpuVals) => {
+                const el = document.getElementById(`mon-procs-${id}`);
+                el.innerHTML = procs.map((p, i) => `
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-300">${p[0]}</span><span class="text-gray-500">${p[1]}</span>
+                        <span class="${p[0] === 'idle' ? 'text-gray-500' : 'text-green-400'}">${p[0] === 'idle' ? (100 - cpuVals).toFixed(1) : cpuVals[i] || 0}%</span>
+                        <span class="text-gray-500">${(Math.random() * 2).toFixed(1)}%</span>
+                    </div>`).join('');
+            };
+            renderProcs([4.2, 1.8, 0.6, 0.2]);
             container.dataset.interval = setInterval(() => {
                 const cpuEl = document.getElementById(`mon-cpu-${id}`);
-                const barEl = document.getElementById(`mon-cpu-bar-${id}`);
-                if (!cpuEl) { clearInterval(container.dataset.interval); return; }
-                const val = Math.floor(Math.random() * 20) + 5;
+                if (!cpuEl) { clearInterval(parseInt(container.dataset.interval, 10)); return; }
+                const val = Math.floor(Math.random() * 18) + 6;
                 cpuEl.innerText = `${val}%`;
-                barEl.style.width = `${val}%`;
+                document.getElementById(`mon-cpu-bar-${id}`).style.width = `${val}%`;
+                const ram = 2.4 + Math.random() * 1.6;
+                document.getElementById(`mon-ram-${id}`).innerHTML = `${ram.toFixed(1)} GB <span class="text-sm text-gray-500">/ 16 GB</span>`;
+                document.getElementById(`mon-ram-bar-${id}`).style.width = `${(ram / 16 * 100).toFixed(0)}%`;
+                renderProcs([val * 0.32, val * 0.14, val * 0.08, val * 0.03]);
             }, 2000);
         }
 
-        // 7. Code Editor (Strict LTR)
+        /* ---------- code studio ---------- */
         function buildCode(id, container) {
             container.innerHTML = `
-                <div class="h-full bg-os-900 flex flex-col font-mono text-left" dir="ltr">
-                    <div class="bg-os-800 p-2 border-b border-white/5 text-xs text-gray-400">index.js</div>
-                    <textarea class="flex-1 bg-transparent p-4 text-green-300 text-sm outline-none resize-none" spellcheck="false">
-function init() {
+                <div class="h-full bg-os-900 flex flex-col font-mono" dir="ltr">
+                    <div class="bg-os-800 p-2 border-b border-white/5 text-xs text-gray-400 flex items-center gap-2 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span class="ms-2">index.js</span>
+                    </div>
+                    <textarea class="flex-1 bg-transparent p-4 text-green-300 text-sm outline-none resize-none" spellcheck="false">function init() {
     console.log("Desktopy IDE Ready.");
 }
 init();</textarea>
@@ -876,11 +1960,210 @@ init();</textarea>
             `;
         }
 
-        // Generic Fallback App
+        /* ---------- tic tac toe ---------- */
+        function buildTicTacToe(id, container) {
+            let board = ['', '', '', '', '', '', '', '', ''];
+            let turn = 'X';
+            let over = false;
+            const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            const check = () => {
+                for (const [a, b, c] of winLines) {
+                    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+                }
+                return board.includes('') ? null : 'draw';
+            };
+            const render = () => {
+                container.innerHTML = `
+                    <div class="h-full bg-os-800 flex flex-col items-center justify-center gap-4 p-6">
+                        <div class="text-xs font-mono text-gray-400" id="ttt-status-${id}">${over ? (check() === 'draw' ? 'Draw!' : `${check()} wins!`) : `${turn}'s turn`}</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            ${board.map((v, i) => `<button onclick="tttPress('${id}', ${i})" class="w-16 h-16 bg-os-900 border border-white/10 rounded-xl text-2xl font-bold transition hover:border-indigo-500 cursor-pointer ${v ? '' : 'hover:bg-white/5'}">${v === 'X' ? '<span class="text-indigo-400">X</span>' : v === 'O' ? '<span class="text-rose-400">O</span>' : ''}</button>`).join('')}
+                        </div>
+                        <button onclick="tttReset('${id}')" class="btn-ghost text-xs">Restart</button>
+                    </div>`;
+            };
+            window[`tttPress_${id}`] = (i) => {
+                if (over || board[i]) return;
+                board[i] = turn;
+                const w = check();
+                if (w) over = true;
+                else turn = turn === 'X' ? 'O' : 'X';
+                render();
+            };
+            window[`tttReset_${id}`] = () => {
+                board = ['', '', '', '', '', '', '', '', ''];
+                turn = 'X'; over = false;
+                render();
+            };
+            render();
+        }
+
+        function tttPress(id, i) { if (window[`tttPress_${id}`]) window[`tttPress_${id}`](i); }
+        function tttReset(id) { if (window[`tttReset_${id}`]) window[`tttReset_${id}`](); }
+
+        /* ---------- files explorer (real PHP filesystem) ---------- */
+        function buildFiles(id, container) {
+            container.innerHTML = `
+                <div class="h-full flex flex-col bg-os-800/60">
+                    <div class="h-11 bg-os-900/60 border-b border-white/5 flex items-center gap-1 px-2 shrink-0">
+                        <button data-fs="back" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('back')}"><i class="ph ph-arrow-left"></i></button>
+                        <button data-fs="up" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('up')}"><i class="ph ph-arrow-u-up-left"></i></button>
+                        <button data-fs="refresh" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('refresh')}"><i class="ph ph-arrows-clockwise"></i></button>
+                        <div class="w-px h-5 bg-white/10 mx-1"></div>
+                        <button data-fs="new-file" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('new_file')}"><i class="ph ph-file-plus"></i></button>
+                        <button data-fs="new-folder" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('new_folder')}"><i class="ph ph-folder-plus"></i></button>
+                        <button data-fs="rename" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition cursor-pointer text-gray-300" title="${T('rename')}"><i class="ph ph-pencil-simple"></i></button>
+                        <button data-fs="delete" class="w-8 h-8 rounded-lg hover:bg-red-500/20 flex items-center justify-center transition cursor-pointer text-red-400" title="${T('delete')}"><i class="ph ph-trash"></i></button>
+                        <div class="flex-1"></div>
+                        <span class="text-[10px] text-gray-500 pe-2" id="fs-status-${id}"></span>
+                    </div>
+                    <div class="px-3 py-1.5 text-[11px] text-gray-400 border-b border-white/5 flex items-center gap-1 flex-wrap shrink-0" id="fs-crumbs-${id}"></div>
+                    <div class="flex-1 overflow-y-auto p-3 min-h-0" id="fs-body-${id}"></div>
+                </div>
+            `;
+            container.dataset.path = 'home';
+            container.dataset.stack = '[]';
+            container.dataset.selected = '';
+            container.dataset.entries = '[]';
+
+            container.querySelectorAll('[data-fs]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const act = btn.dataset.fs;
+                    const path = container.dataset.path || 'home';
+                    const stack = JSON.parse(container.dataset.stack || '[]');
+                    const sel = container.dataset.selected;
+                    if (act === 'back') {
+                        const prev = stack.pop();
+                        container.dataset.stack = JSON.stringify(stack);
+                        if (prev) loadDir(id, container, prev);
+                    } else if (act === 'up') {
+                        if (path !== 'home') {
+                            stack.push(path);
+                            container.dataset.stack = JSON.stringify(stack);
+                            loadDir(id, container, path.split('/').slice(0, -1).join('/') || 'home');
+                        }
+                    } else if (act === 'refresh') {
+                        loadDir(id, container, path);
+                    } else if (act === 'new-file' || act === 'new-folder') {
+                        const isFile = act === 'new-file';
+                        promptBox(isFile ? T('new_file_prompt') : T('new_folder_prompt'), '', isFile ? 'name.txt' : 'folder').then(async (name) => {
+                            if (!name) return;
+                            const target = path + '/' + name;
+                            const r = isFile ? await Backend.write(target, '') : await Backend.mkdir(target);
+                            if (r.ok) { toast(T('created'), 'ok'); loadDir(id, container, path); }
+                            else toast(r.error || T('error'), 'err');
+                        });
+                    } else if (act === 'rename') {
+                        if (!sel) { toast('Select an item first', 'warn'); return; }
+                        promptBox(T('rename_prompt'), sel.split('/').pop()).then(async (name) => {
+                            if (!name) return;
+                            const r = await Backend.mv(sel, path + '/' + name);
+                            if (r.ok) { toast(T('renamed'), 'ok'); loadDir(id, container, path); }
+                            else toast(r.error || T('error'), 'err');
+                        });
+                    } else if (act === 'delete') {
+                        if (!sel) { toast('Select an item first', 'warn'); return; }
+                        confirmBox(T('delete'), T('delete_confirm'), T('delete')).then(async (ok) => {
+                            if (!ok) return;
+                            const r = await Backend.rm(sel);
+                            if (r.ok) { toast(T('file_deleted'), 'ok'); loadDir(id, container, path); }
+                            else toast(r.error || T('error'), 'err');
+                        });
+                    }
+                });
+            });
+
+            loadDir(id, container, 'home');
+        }
+
+        function fmtSize(n) {
+            if (n == null) return '—';
+            if (n < 1024) return n + ' B';
+            if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+            return (n / 1048576).toFixed(1) + ' MB';
+        }
+
+        async function loadDir(id, container, path) {
+            const body = document.getElementById(`fs-body-${id}`);
+            const status = document.getElementById(`fs-status-${id}`);
+            const crumbs = document.getElementById(`fs-crumbs-${id}`);
+            body.innerHTML = '<div class="text-xs text-gray-500 p-4">Loading…</div>';
+            const r = await Backend.ls(path || 'home');
+            if (!r.ok) {
+                body.innerHTML = `<div class="text-xs text-red-400 p-4"><i class="ph ph-warning"></i> ${r.error}</div>`;
+                return;
+            }
+            container.dataset.path = r.path;
+            container.dataset.entries = JSON.stringify(r.entries);
+            container.dataset.selected = '';
+            const entries = r.entries;
+
+            const segs = r.path.split('/').filter(Boolean);
+            let acc = '';
+            crumbs.innerHTML = segs.map((s, i) => {
+                acc = i === 0 ? s : acc + '/' + s;
+                const label = s === 'home' ? '<i class="ph ph-house"></i>' : esc(s);
+                return `<button data-crumb="${esc(acc)}" class="hover:text-indigo-300 transition cursor-pointer px-1">${label}</button>`;
+            }).join('<span class="text-gray-600">/</span>');
+            crumbs.querySelectorAll('[data-crumb]').forEach((b) => {
+                b.addEventListener('click', () => {
+                    const target = b.dataset.crumb;
+                    if (target !== container.dataset.path) {
+                        const stack = JSON.parse(container.dataset.stack || '[]');
+                        stack.push(container.dataset.path);
+                        container.dataset.stack = JSON.stringify(stack);
+                        loadDir(id, container, target);
+                    }
+                });
+            });
+
+            status.innerText = `${entries.length} ${T('items')}`;
+            if (!entries.length) {
+                body.innerHTML = `<div class="text-xs text-gray-500 p-6 text-center">${T('empty_folder')}</div>`;
+                return;
+            }
+
+            body.innerHTML = '';
+            entries.forEach((e) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent hover:bg-white/5 transition cursor-pointer';
+                row.dataset.path = e.path;
+                row.dataset.type = e.type;
+                const icon = e.type === 'dir' ? 'ph-folder-open text-amber-300' : 'ph-file-text text-blue-300';
+                const meta = e.type === 'dir' ? T('folder') : fmtSize(e.size);
+                row.innerHTML = `
+                    <i class="ph ${icon} text-xl"></i>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[13px] font-medium truncate">${esc(e.name)}</div>
+                        <div class="text-[10px] text-gray-500">${meta}</div>
+                    </div>
+                `;
+                row.addEventListener('click', () => {
+                    container.dataset.selected = e.path;
+                    body.querySelectorAll('[data-path]').forEach((el) => el.classList.remove('!bg-white/10', '!border-indigo-500/40'));
+                    row.classList.add('!bg-white/10', '!border-indigo-500/40');
+                    status.innerText = `${entries.length} ${T('items')} · ${e.name}`;
+                });
+                row.addEventListener('dblclick', async () => {
+                    if (e.type === 'dir') {
+                        const stack = JSON.parse(container.dataset.stack || '[]');
+                        stack.push(container.dataset.path);
+                        container.dataset.stack = JSON.stringify(stack);
+                        loadDir(id, container, e.path);
+                    } else {
+                        const fr = await Backend.read(e.path);
+                        if (fr.ok) previewBox(`${T('preview_of')} ${e.name}`, fr.content);
+                        else toast(fr.error || T('error'), 'err');
+                    }
+                });
+                body.appendChild(row);
+            });
+        }
+
+        /* ---------- generic fallback app ---------- */
         function buildGeneric(id, container, msg, isTechnical = false) {
             const app = apps[id];
             const title = i18n[state.lang][id] || id;
-
             container.innerHTML = `
                 <div class="h-full flex flex-col items-center justify-center p-8 bg-os-800 text-center relative overflow-hidden">
                     <div class="w-24 h-24 rounded-3xl bg-os-900 border border-white/10 shadow-xl flex items-center justify-center mb-6 relative z-10">
@@ -894,30 +2177,36 @@ init();</textarea>
             `;
         }
 
+        /* ============================================================
+         * Launcher, dock, theme, clock, boot
+         * ============================================================ */
+
         function renderLauncher() {
             const grid = document.getElementById('launcher-grid');
             grid.innerHTML = '';
             const search = document.getElementById('launcher-search').value.toLowerCase();
-
-            Object.keys(apps).forEach(id => {
+            let shown = 0;
+            Object.keys(apps).forEach((id) => {
                 const name = i18n[state.lang][id] || id;
                 if (search && !name.toLowerCase().includes(search)) return;
-
+                shown++;
+                const running = !!state.windows[id];
                 const btn = document.createElement('button');
-                btn.className = "flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/10 transition group cursor-pointer active:scale-95";
-                btn.onclick = () => openApp(id);
+                btn.className = 'launch-tile flex flex-col items-center gap-3 p-4 rounded-2xl cursor-pointer';
                 btn.innerHTML = `
-                    <div class="w-16 h-16 rounded-2xl bg-os-800 border border-white/5 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <div class="w-16 h-16 rounded-2xl bg-os-800 border border-white/5 flex items-center justify-center shadow-lg launch-icon relative">
                         <i class="ph ph-${apps[id].icon} ${apps[id].color} text-3xl drop-shadow-md"></i>
+                        ${running ? '<span class="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400"></span>' : ''}
                     </div>
-                    <span class="text-xs font-medium text-gray-300 drop-shadow">${name}</span>
-                `;
+                    <span class="text-xs font-medium text-gray-300">${name}</span>`;
+                btn.onclick = () => openApp(id);
                 grid.appendChild(btn);
             });
+            document.getElementById('launcher-status').innerText = shown ? `${shown} apps` : '';
         }
 
-        function toggleLauncher() {
-            state.launcherOpen = !state.launcherOpen;
+        function toggleLauncher(force) {
+            state.launcherOpen = force !== undefined ? force : !state.launcherOpen;
             const overlay = document.getElementById('launcher-overlay');
             if (state.launcherOpen) {
                 overlay.classList.add('active');
@@ -926,54 +2215,74 @@ init();</textarea>
             } else {
                 overlay.classList.remove('active');
             }
+            saveStateDebounced();
         }
 
-        function closeLauncher() { if (state.launcherOpen) toggleLauncher(); }
+        function closeLauncher() {
+            if (state.launcherOpen) toggleLauncher(false);
+        }
+
         document.getElementById('launcher-search').addEventListener('input', renderLauncher);
 
+        /* ---------- dock ---------- */
         function updateDock() {
-            const pinnedContainer = document.getElementById('dock-pinned');
-            const runningContainer = document.getElementById('dock-running');
-            pinnedContainer.innerHTML = '';
-            runningContainer.innerHTML = '';
-
-            Object.keys(apps).forEach(id => {
+            const pinned = document.getElementById('dock-pinned');
+            const running = document.getElementById('dock-running');
+            pinned.innerHTML = '';
+            running.innerHTML = '';
+            let runningCount = 0;
+            Object.keys(apps).forEach((id) => {
                 const isRunning = !!state.windows[id];
                 const isPinned = apps[id].pinned;
                 if (!isPinned && !isRunning) return;
-
                 const btn = document.createElement('button');
-                btn.className = `w-10 h-10 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer
-                    ${isRunning ? 'bg-white/10 hover:bg-white/20' : 'hover:bg-white/5'}`;
-
-                btn.onclick = () => {
+                btn.className = `dock-btn ${isRunning ? 'running' : ''}`;
+                btn.innerHTML = `
+                    <i class="ph ph-${apps[id].icon} ${apps[id].color} text-2xl"></i>
+                    ${isRunning ? '<div class="dot"></div>' : ''}
+                    <div class="dock-tip">${i18n[state.lang][id] || id}</div>`;
+                btn.addEventListener('click', () => {
                     if (isRunning) {
                         if (state.windows[id].minimized) toggleMinimize(id);
                         else focusWindow(id);
                     } else openApp(id);
-                };
-
-                btn.innerHTML = `
-                    <i class="ph ph-${apps[id].icon} ${apps[id].color} text-xl transition-transform group-hover:scale-110 group-active:scale-95"></i>
-                    ${isRunning ? '<div class="absolute -bottom-1 w-1 h-1 rounded-full bg-gray-400"></div>' : ''}
-                `;
-
-                const tooltip = document.createElement('div');
-                tooltip.className = "absolute -top-10 bg-os-900 border border-white/10 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap";
-                tooltip.innerText = i18n[state.lang][id] || id;
-                btn.appendChild(tooltip);
-
-                if (isPinned) pinnedContainer.appendChild(btn);
-                else runningContainer.appendChild(btn);
+                });
+                if (isPinned) pinned.appendChild(btn);
+                else { running.appendChild(btn); runningCount++; }
             });
-
-            document.querySelector('#dock-pinned + div').style.display = runningContainer.children.length ? 'block' : 'none';
+            document.getElementById('dock-sep').style.display = runningCount ? 'block' : 'none';
         }
 
-        function toggleTheme() {
-            state.theme = state.theme === 'dark' ? 'light' : 'dark';
-            const icon = document.getElementById('theme-icon');
+        function setupDockMagnify() {
+            const dock = document.getElementById('dock');
+            const maxDist = 240;
+            dock.addEventListener('pointermove', (e) => {
+                const btns = [...dock.querySelectorAll('.dock-btn')];
+                btns.forEach((b) => {
+                    const r = b.getBoundingClientRect();
+                    const cx = r.left + r.width / 2;
+                    const dist = Math.abs(cx - e.clientX);
+                    const scale = dist < maxDist ? 1 + (1 - dist / maxDist) * 0.35 : 1;
+                    b.style.transform = `translateY(${(scale - 1) * -10}px) scale(${scale})`;
+                });
+            });
+            dock.addEventListener('pointerleave', () => {
+                dock.querySelectorAll('.dock-btn').forEach((b) => { b.style.transform = ''; });
+            });
+        }
 
+        /* ---------- theme / language / accent ---------- */
+        function setAccent(id) {
+            state.accent = id;
+            ACCENTS.forEach((a) => document.body.classList.remove('accent-' + a.id));
+            document.body.classList.add('accent-' + id);
+            saveStateDebounced();
+            if (state.launcherOpen) renderLauncher();
+        }
+
+        function toggleTheme(force) {
+            state.theme = force || (state.theme === 'dark' ? 'light' : 'dark');
+            const icon = document.getElementById('theme-icon');
             if (state.theme === 'light') {
                 document.documentElement.classList.remove('dark');
                 document.body.classList.add('light', 'text-gray-800');
@@ -985,44 +2294,133 @@ init();</textarea>
                 document.body.classList.remove('light', 'text-gray-800');
                 icon.className = 'ph ph-moon text-lg';
             }
+            saveStateDebounced();
         }
 
-        function toggleLang() {
-            state.lang = state.lang === 'ar' ? 'en' : 'ar';
+        function toggleLang(force) {
+            state.lang = force || (state.lang === 'ar' ? 'en' : 'ar');
             document.documentElement.lang = state.lang;
             document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
-
             document.getElementById('btn-lang').innerText = state.lang === 'ar' ? 'EN' : 'AR';
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (i18n[state.lang][key]) el.innerText = i18n[state.lang][key];
+            document.querySelectorAll('[data-i18n]').forEach((el) => {
+                const k = el.dataset.i18n;
+                if (i18n[state.lang][k]) el.innerText = i18n[state.lang][k];
             });
-            document.querySelectorAll('[data-i18n-id]').forEach(el => {
-                const key = el.getAttribute('data-i18n-id');
-                if (i18n[state.lang][key]) el.innerText = i18n[state.lang][key];
+            document.querySelectorAll('[data-i18n-id]').forEach((el) => {
+                const k = el.dataset.i18nId;
+                if (i18n[state.lang][k]) el.innerText = i18n[state.lang][k];
             });
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (i18n[state.lang][key]) el.setAttribute('placeholder', i18n[state.lang][key]);
+            document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+                const k = el.dataset.i18nPlaceholder;
+                if (i18n[state.lang][k]) el.setAttribute('placeholder', i18n[state.lang][k]);
             });
-
+            Object.keys(state.windows).forEach((id) => {
+                const el = state.windows[id].element.querySelector('.app-title');
+                if (el) el.innerText = i18n[state.lang][id] || id;
+            });
             if (state.launcherOpen) renderLauncher();
             updateDock();
             updateClock();
+            saveStateDebounced();
         }
 
+        /* ---------- clock ---------- */
         function updateClock() {
             const now = new Date();
             document.getElementById('top-time').innerText = now.toLocaleTimeString(state.lang === 'ar' ? 'ar-BH' : 'en-US', { hour: 'numeric', minute: '2-digit' });
             document.getElementById('top-date').innerText = now.toLocaleDateString(state.lang === 'ar' ? 'ar-BH' : 'en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // Init
-        updateDock();
-        setTimeout(() => openApp('terminal'), 300);
+        setInterval(updateClock, 1000);
+
+        /* ---------- desktop widget live stats ---------- */
+        function renderWidgetStats() {
+            const cpu = document.getElementById('w-cpu');
+            if (!cpu) return;
+            const tick = () => {
+                const c = Math.floor(Math.random() * 14) + 4;
+                const m = Math.floor(Math.random() * 10) + 30;
+                cpu.innerText = c + '%';
+                document.getElementById('w-cpu-bar').style.width = c + '%';
+                document.getElementById('w-ram').innerText = m + '%';
+                document.getElementById('w-ram-bar').style.width = m + '%';
+            };
+            tick();
+            setInterval(tick, 2200);
+            if (state.backend) {
+                Backend.disk().then((r) => {
+                    if (r.ok) document.getElementById('w-disk').innerText = `${(r.total / 1024).toFixed(1)} KB`;
+                });
+            }
+        }
+
+        /* ---------- desktop context menu + reset ---------- */
+        function showDesktopMenu(x, y) {
+            showContextMenu(x, y, [
+                { key: 'terminal', icon: 'terminal-window', label: T('new_terminal'), action: () => openApp('terminal') },
+                { key: 'files', icon: 'folder-open', label: i18n[state.lang].files, action: () => openApp('files') },
+                { key: 'editor', icon: 'notepad', label: i18n[state.lang].editor, action: () => openApp('editor') },
+                { key: 'settings', icon: 'gear', label: T('open_settings'), action: () => openApp('settings') },
+                { sep: true },
+                { key: 'theme', icon: state.theme === 'dark' ? 'sun' : 'moon', label: T('theme_mode'), action: () => toggleTheme() },
+                { key: 'lang', icon: 'translate', label: T('language'), action: () => toggleLang() },
+                { sep: true },
+                { key: 'reset', icon: 'arrow-counter-clockwise', label: T('reset_desktop'), danger: true, action: () => resetDesktopConfirm() }
+            ]);
+        }
+
+        async function doReset() {
+            state.suppressSave = true; // don't let beforeunload re-create the state file
+            if (state.backend) await Backend.reset();
+            else localStorage.removeItem('desktopy:state');
+            location.reload();
+        }
+
+        function resetDesktopConfirm() {
+            confirmBox(T('reset_desktop'), T('reset_confirm'), T('confirm')).then((ok) => {
+                if (ok) doReset();
+            });
+        }
+
+        /* ---------- boot ---------- */
+        function applyPreferences(d) {
+            if (d.lang === 'en' || d.lang === 'ar') state.lang = d.lang;
+            if (d.theme === 'light' || d.theme === 'dark') state.theme = d.theme;
+            if (d.accent) state.accent = d.accent;
+            if (typeof d.notes === 'string') state.notes = d.notes;
+            if (Array.isArray(d.history)) state.history = d.history;
+            toggleTheme(state.theme);
+            toggleLang(state.lang);
+            setAccent(state.accent);
+        }
+
+        async function boot() {
+            state.backend = await Backend.init();
+            const p = await loadPersisted();
+            if (p.data) applyPreferences(p.data);
+            restoreWindows(p.data ? p.data.windows : {}, p.data ? (p.data.zIndex || 0) : 0);
+            updateClock();
+            updateDock();
+            setupDockMagnify();
+            renderWidgetStats();
+            if (!state.backend) toast(T('backend_offline'), 'warn', 4200);
+            if (p.fresh) {
+                setTimeout(() => openApp('terminal'), 380);
+            } else if (p.data && p.data.launcher) {
+                toggleLauncher(true);
+            }
+            // Exposed for tests & debugging.
+            window.__desktopyBooted = true;
+            window.__desktopy = {
+                state, Backend, apps,
+                openApp, closeApp, toggleTheme, toggleLang, setAccent,
+                saveNow: saveStateNow, snapshot,
+                resetDesktop: doReset
+            };
+            document.dispatchEvent(new CustomEvent('desktopy:ready'));
+        }
+
+        boot();
 
     </script>
 </body>
